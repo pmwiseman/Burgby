@@ -280,12 +280,19 @@ static NSString * const clientSecret = @"QLITWC3K5U3PASW0BRGR5IQMZJE04NYSC5HQDH3
                         NSString  *widthString = [NSString stringWithFormat:@"%@", width];
                         NSString  *heightString = [NSString stringWithFormat:@"%@", height];
                         self.imageUrlString = [NSString stringWithFormat:@"%@%@x%@%@", prefixString, widthString, heightString, suffixString];
+                    } else {
+                        self.imageUrlString = @"no image";
                     }
                 }
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                        self.imageView.image =
-                        [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:self.imageUrlString]]];
+                        if(![self.imageUrlString isEqualToString:@"no image"]){
+                            self.imageView.image =
+                            [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:self.imageUrlString]]];
+                        } else {
+                            self.imageView.image = [UIImage imageNamed:@"Burgers_Nearby_No_Image_Available"];
+                        }
+                        
                     });
             }
         } else {

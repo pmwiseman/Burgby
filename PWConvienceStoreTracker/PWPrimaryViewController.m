@@ -20,6 +20,7 @@
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) UIRefreshControl *refreshControl;
 @property (strong, nonatomic) UISearchBar *searchBar;
+@property (strong, nonatomic) UILabel *noResultsLabel;
 //Networking
 @property (strong, nonatomic) NSURLSession *session;
 @property (strong, nonatomic) NSURLSessionConfiguration *sessionConfiguration;
@@ -100,6 +101,20 @@ static int const navBarPlusStatusBar = 64;
     self.searchBar.barTintColor = [UIColor primaryColor];
     [self.searchBar setBackgroundImage:[UIImage imageNamed:@"Burgers_Nav_Bar_Color"]];
     [self.view addSubview:self.searchBar];
+    //No Results Label
+    int noResultsLabelX = 0;
+    int noResultsLabelY = 0;
+    int noResultsLabelWidth = self.view.frame.size.width;
+    int noResultsLabelHeight = self.view.frame.size.height;
+    CGRect noResultsLabelFrame = CGRectMake(noResultsLabelX,
+                                            noResultsLabelY,
+                                            noResultsLabelWidth,
+                                            noResultsLabelHeight);
+    self.noResultsLabel = [[UILabel alloc] initWithFrame:noResultsLabelFrame];
+    self.noResultsLabel.text = @"No Results";
+    self.noResultsLabel.textColor = [UIColor lightGrayColor];
+    self.noResultsLabel.font = [UIFont boldSystemFontOfSize:18.0];
+    self.noResultsLabel.textAlignment = NSTextAlignmentCenter;
 }
 
 -(UIStatusBarStyle)preferredStatusBarStyle
@@ -114,7 +129,19 @@ static int const navBarPlusStatusBar = 64;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [self.venueList count];
+    NSInteger count;
+    if([self.venueList count] > 0){
+        if([self.noResultsLabel isDescendantOfView:self.tableView]){
+            [self.noResultsLabel removeFromSuperview];
+        }
+        count = [self.venueList count];
+    } else {
+        count = 0;
+        if(![self.noResultsLabel isDescendantOfView:self.tableView]){
+            self.tableView.backgroundView = self.noResultsLabel;
+        }
+    }
+    return count;
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView
@@ -140,6 +167,9 @@ static int const navBarPlusStatusBar = 64;
     VenueObject *object = [self.venueList objectAtIndex:indexPath.row];
     PWVenueDetailViewController *venueDetailViewController = [[PWVenueDetailViewController alloc] init];
     venueDetailViewController.venueObject = object;
+    if([self.searchBar isFirstResponder]){
+        [self.searchBar resignFirstResponder];
+    }
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     [self.navigationController pushViewController:venueDetailViewController animated:YES];
 }
@@ -261,7 +291,6 @@ static int const navBarPlusStatusBar = 64;
                     NSDictionary *responseDictionary = responseObject[@"response"];
                     NSArray *venuesArray = responseDictionary[@"venues"];
                     for(NSDictionary *dictionary in venuesArray){
-                        NSLog(@"RESPONSE: %@", dictionary[@"id"]);
                         //Lat and Lon
                         NSString *tempLat = [dictionary valueForKeyPath:@"location.lat"];
                         NSString *tempLon = [dictionary valueForKeyPath:@"location.lng"];
@@ -319,6 +348,21 @@ static int const navBarPlusStatusBar = 64;
                     [self presentViewController:alert animated:YES completion:nil];
                 });
             }
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+                if([self.refreshControl isRefreshing]){
+                    [self.refreshControl endRefreshing];
+                }
+                UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Network Error"
+                                                                               message:@"Check to make sure that your location services are on and you are connected to a network"
+                                                                        preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    [self dismissViewControllerAnimated:YES completion:nil];
+                }];
+                [alert addAction:dismissAction];
+                [self presentViewController:alert animated:YES completion:nil];
+            });
         }
     }];
     [dataTask resume];
