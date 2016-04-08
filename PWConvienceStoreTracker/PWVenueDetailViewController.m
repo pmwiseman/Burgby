@@ -178,7 +178,7 @@ static NSString * const clientSecret = @"QLITWC3K5U3PASW0BRGR5IQMZJE04NYSC5HQDH3
     [self.scrollViewContainer addSubview:self.websiteLabel];
     //Website Text View
     int websiteTextViewWidth = 290;
-    int websiteTextViewHeight = 40;
+    int websiteTextViewHeight = 60;
     int websiteTextViewX = self.view.frame.size.width - websiteTextViewWidth - 8;
     int websiteTextViewY = websiteLabelY;
     CGRect websiteTextViewFrame = CGRectMake(websiteTextViewX,

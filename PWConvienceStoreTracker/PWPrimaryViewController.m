@@ -49,7 +49,7 @@ static int const navBarPlusStatusBar = 64;
     [super viewDidLoad];
     self.venueList = [[NSMutableArray alloc] init];
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:self.navigationItem.backBarButtonItem.style target:nil action:nil];
-    [self.navigationItem setTitle:@"Nearby Food"];
+    [self.navigationItem setTitle:@"Nearby"];
     [self setupTableView];
     [self getCurrentLocation];
 }
