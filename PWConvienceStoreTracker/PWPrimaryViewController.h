@@ -11,6 +11,6 @@
 
 @interface PWPrimaryViewController : UIViewController <CLLocationManagerDelegate,
 NSURLSessionDelegate, NSURLSessionDataDelegate, UISearchBarDelegate, UITableViewDelegate,
-UITableViewDataSource, UISearchBarDelegate>
+UITableViewDataSource, UISearchBarDelegate, UITextFieldDelegate>
 
 @end

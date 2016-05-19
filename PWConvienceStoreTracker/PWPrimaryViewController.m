@@ -11,6 +11,7 @@
 #import "VenueObject.h"
 #import "PWVenueDetailViewController.h"
 #import "UIColor+Colors.h"
+#import "PWSearchTextFieldView.h"
 
 @interface PWPrimaryViewController ()
 
@@ -19,7 +20,8 @@
 @property (strong, nonatomic) PWVenueCell *cell;
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) UIRefreshControl *refreshControl;
-@property (strong, nonatomic) UISearchBar *searchBar;
+@property (strong, nonatomic) PWSearchTextFieldView *searchBar;
+@property (strong, nonatomic) PWSearchTextFieldView *locationSearchBar;
 @property (strong, nonatomic) UILabel *noResultsLabel;
 //Networking
 @property (strong, nonatomic) NSURLSession *session;
@@ -49,7 +51,7 @@ static int const navBarPlusStatusBar = 64;
     [super viewDidLoad];
     self.venueList = [[NSMutableArray alloc] init];
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:self.navigationItem.backBarButtonItem.style target:nil action:nil];
-    [self.navigationItem setTitle:@"Nearby"];
+    [self.navigationItem setTitle:@"Discover"];
     [self setupTableView];
     [self getCurrentLocation];
 }
@@ -65,7 +67,7 @@ static int const navBarPlusStatusBar = 64;
 {
     [self.navigationController.navigationBar setShadowImage:[UIImage new]];
     int tableViewX = 0;
-    int tableViewY = 40;
+    int tableViewY = 75;
     int tableViewWidth = self.view.frame.size.width;
     int tableViewHeight = self.view.frame.size.height - tableViewY - navBarPlusStatusBar;
     CGRect tableViewFrame = CGRectMake(tableViewX,
@@ -95,12 +97,28 @@ static int const navBarPlusStatusBar = 64;
                                        searchBarY,
                                        searchBarWidth,
                                        searchBarHeight);
-    self.searchBar = [[UISearchBar alloc] initWithFrame:searchBarFrame];
-    self.searchBar.placeholder = @"Search for Food";
-    self.searchBar.delegate = self;
-    self.searchBar.barTintColor = [UIColor primaryColor];
-    [self.searchBar setBackgroundImage:[UIImage imageNamed:@"Burgers_Nav_Bar_Color"]];
+    self.searchBar = [[PWSearchTextFieldView alloc] initWithFrame:searchBarFrame];
+    [self.searchBar setStandardPlaceholderWithText:@"Type of food, etc..."];
+    self.searchBar.textField.delegate = self;
+    self.searchBar.textField.tag = 0;
+    //[self.searchBar setBackgroundImage:[UIImage imageNamed:@"Burgers_Nav_Bar_Color"]];
     [self.view addSubview:self.searchBar];
+    //Location Search Bar
+    int locationSearchBarX = 0;
+    int locationSearchBarY = 35;
+    int locationSearchBarWidth = self.view.frame.size.width;
+    int locationSearchBarHeight = 40;
+    CGRect locationSearchBarFrame = CGRectMake(locationSearchBarX,
+                                               locationSearchBarY,
+                                               locationSearchBarWidth,
+                                               locationSearchBarHeight);
+    self.locationSearchBar = [[PWSearchTextFieldView alloc] initWithFrame:locationSearchBarFrame];
+    self.locationSearchBar.locationMode = YES;
+    [self.locationSearchBar setStandardPlaceholderWithText:@"Location"];
+    self.locationSearchBar.textField.delegate = self;
+    self.locationSearchBar.textField.tag = 1;
+    //[self.locationSearchBar setBackgroundImage:[UIImage imageNamed:@"Burgers_Nav_Bar_Color"]];
+    [self.view addSubview:self.locationSearchBar];
     //No Results Label
     int noResultsLabelX = 0;
     int noResultsLabelY = 0;
@@ -133,13 +151,16 @@ static int const navBarPlusStatusBar = 64;
     if([self.venueList count] > 0){
         if([self.noResultsLabel isDescendantOfView:self.tableView]){
             [self.noResultsLabel removeFromSuperview];
+            
         }
+        self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         count = [self.venueList count];
     } else {
         count = 0;
         if(![self.noResultsLabel isDescendantOfView:self.tableView]){
             self.tableView.backgroundView = self.noResultsLabel;
         }
+        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     }
     return count;
 }
@@ -148,18 +169,43 @@ static int const navBarPlusStatusBar = 64;
         cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     self.venueObject = [self.venueList objectAtIndex:indexPath.row];
-    self.cell = [self.tableView dequeueReusableCellWithIdentifier:cellIdentifier
-                                                     forIndexPath:indexPath];
+    CGSize tempRestaurantNameSize = [self.venueObject.name sizeWithAttributes:@{NSFontAttributeName: [UIFont systemFontOfSize:17.0]}];
+    if(tempRestaurantNameSize.width > 270){
+        self.cell = [[PWVenueCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                       reuseIdentifier:cellIdentifier
+                                            nameHeight:44];
+    } else {
+        self.cell = [[PWVenueCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                       reuseIdentifier:cellIdentifier
+                                            nameHeight:20];
+    }
     self.cell.nameLabel.text = self.venueObject.name;
     self.cell.addressTextView.text = self.venueObject.address;
-    self.cell.distanceLabel.text = [NSString stringWithFormat:@"%@mi", self.venueObject.distance];
+    if([self.locationSearchBar.textField.text isEqualToString:@"Current Location"]){
+        if([self.cell.distanceLabel isHidden]){
+            [self.cell.distanceLabel setHighlighted:YES];
+        }
+        self.cell.distanceLabel.text = [NSString stringWithFormat:@"%@mi", self.venueObject.distance];
+    } else {
+        [self.cell.distanceLabel setHidden:YES];
+    }
+    
     
     return self.cell;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 70;
+    VenueObject *object = [self.venueList objectAtIndex:indexPath.row];
+    CGSize tempRestaurantNameSize = [object.name sizeWithAttributes:@{NSFontAttributeName: [UIFont systemFontOfSize:17.0]}];
+    int height;
+    if(tempRestaurantNameSize.width > 270){
+        height = 94;
+    } else {
+        height = 70;
+    }
+    
+    return height;
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -174,12 +220,46 @@ static int const navBarPlusStatusBar = 64;
     [self.navigationController pushViewController:venueDetailViewController animated:YES];
 }
 
-#pragma mark - UISearchBar Delegate
+#pragma mark - UITextView Delegate
 
--(void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+-(void)textFieldDidBeginEditing:(UITextField *)textField
 {
+    //food search bar
+    if([self.searchBar.textField isFirstResponder]){
+        [self.searchBar hideStandardPlaceholder];
+    }
+    //location search search bar
+    if([self.locationSearchBar.textField isFirstResponder]){
+        [self.locationSearchBar hideStandardPlaceholder];
+    }
+}
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    //food search bar
+    if([self.searchBar.textField isFirstResponder]){
+        [self.searchBar.textField resignFirstResponder];
+    }
+    //location search search bar
+    if([self.locationSearchBar.textField isFirstResponder]){
+        [self.locationSearchBar.textField resignFirstResponder];
+    }
     [self getNearbyFood];
-    [self.searchBar resignFirstResponder];
+    return YES;
+}
+
+-(void)textFieldDidEndEditing:(UITextField *)textField
+{
+    //food search bar
+    if(textField.tag == 0
+       && [self.searchBar.textField.text isEqualToString:@""]){
+        [self.searchBar setStandardPlaceholderWithText:@"Type of food, etc..."];
+    }
+    //location search search bar
+    if(textField.tag == 1
+       && [self.locationSearchBar.textField.text isEqualToString:@""]){
+        [self.locationSearchBar setStandardPlaceholderWithText:@"Location"];
+    }
 }
 
 #pragma mark - Location
@@ -258,18 +338,28 @@ static int const navBarPlusStatusBar = 64;
         self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     }
     NSString *text;
-    if(self.searchBar.text.length == 0){
+    if(self.searchBar.textField.text.length == 0){
         text = @"burgers";
     } else {
-        text = self.searchBar.text;
+        text = [self.searchBar.textField.text stringByReplacingOccurrencesOfString:@" " withString:@"+"];
     }
     self.sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSString *fourSquareDataUrlString = [NSString stringWithFormat:@"https://api.foursquare.com/v2/venues/search?client_id=%@&client_secret=%@&v=20130815&ll=%f,%f&query=%@",
-                                         clientId,
-                                         clientSecret,
-                                         self.currentLocation.coordinate.latitude,
-                                         self.currentLocation.coordinate.longitude,
-                                         text];
+    NSString *fourSquareDataUrlString;
+    if([self.locationSearchBar.textField.text isEqualToString:@"Current Location"]){
+        fourSquareDataUrlString = [NSString stringWithFormat:@"https://api.foursquare.com/v2/venues/search?client_id=%@&client_secret=%@&v=20130815&ll=%f,%f&query=%@",
+                                             clientId,
+                                             clientSecret,
+                                             self.currentLocation.coordinate.latitude,
+                                             self.currentLocation.coordinate.longitude,
+                                             text];
+    } else {
+        fourSquareDataUrlString = [NSString stringWithFormat:@"https://api.foursquare.com/v2/venues/search?client_id=%@&client_secret=%@&v=20130815&near=%@&query=%@",
+                                   clientId,
+                                   clientSecret,
+                                   self.locationSearchBar.textField.text,
+                                   text];
+    }
+    
     if(!self.session){
         self.session = [NSURLSession sessionWithConfiguration:self.sessionConfiguration
                                                      delegate:self

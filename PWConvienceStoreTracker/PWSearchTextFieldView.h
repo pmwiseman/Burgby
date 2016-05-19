@@ -10,4 +10,11 @@
 
 @interface PWSearchTextFieldView : UIView
 
+//Properties
+@property (strong, nonatomic) UITextField *textField;
+@property (assign) BOOL locationMode;
+//Methods
+-(void)setStandardPlaceholderWithText:(NSString *)placeholderText;
+-(void)hideStandardPlaceholder;
+
 @end

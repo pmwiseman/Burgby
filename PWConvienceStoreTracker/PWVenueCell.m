@@ -12,19 +12,22 @@
 
 -(instancetype)initWithStyle:(UITableViewCellStyle)style
              reuseIdentifier:(NSString *)reuseIdentifier
+                  nameHeight:(int)nameHeight
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if(self){
         //name
         int nameLabelX = 8;
         int nameLabelY = 8;
-        int nameLabelWidth = 300;
-        int nameLabelHeight = 20;
+        int nameLabelWidth = 270;
+        int nameLabelHeight = nameHeight;
         CGRect nameLabelFrame = CGRectMake(nameLabelX,
                                            nameLabelY,
                                            nameLabelWidth,
                                            nameLabelHeight);
         self.nameLabel = [[UILabel alloc] initWithFrame:nameLabelFrame];
+        self.nameLabel.numberOfLines = 0;
+        self.nameLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.nameLabel.font = [UIFont systemFontOfSize:17.0];
         [self addSubview:self.nameLabel];
         //address

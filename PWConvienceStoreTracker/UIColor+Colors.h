@@ -12,5 +12,6 @@
 
 +(UIColor *)peterRiverColor;
 +(UIColor *)primaryColor;
++(UIColor *)searchBarTextColor;
 
 @end

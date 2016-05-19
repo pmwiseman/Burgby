@@ -28,4 +28,13 @@
     
 }
 
++(UIColor *)searchBarTextColor
+{
+    return [UIColor colorWithRed:0.0f/255.0f
+                           green:0.0f/255.0f
+                            blue:59.0f/255.0f
+                           alpha:1.0f];
+    
+}
+
 @end

@@ -14,4 +14,8 @@
 @property (strong, nonatomic) UILabel *addressTextView;
 @property (strong, nonatomic) UILabel *distanceLabel;
 
+-(instancetype)initWithStyle:(UITableViewCellStyle)style
+             reuseIdentifier:(NSString *)reuseIdentifier
+                  nameHeight:(int)nameHeight;
+
 @end
