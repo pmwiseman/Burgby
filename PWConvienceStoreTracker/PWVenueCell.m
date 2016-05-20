@@ -19,7 +19,7 @@
         //name
         int nameLabelX = 8;
         int nameLabelY = 8;
-        int nameLabelWidth = 270;
+        int nameLabelWidth = 265;
         int nameLabelHeight = nameHeight;
         CGRect nameLabelFrame = CGRectMake(nameLabelX,
                                            nameLabelY,

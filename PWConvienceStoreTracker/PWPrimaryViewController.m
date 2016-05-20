@@ -53,6 +53,7 @@ static int const navBarPlusStatusBar = 64;
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:self.navigationItem.backBarButtonItem.style target:nil action:nil];
     [self.navigationItem setTitle:@"Discover"];
     [self setupTableView];
+    [self setupToolbar];
     [self getCurrentLocation];
 }
 
@@ -138,6 +139,47 @@ static int const navBarPlusStatusBar = 64;
 -(UIStatusBarStyle)preferredStatusBarStyle
 {
     return UIStatusBarStyleLightContent;
+}
+
+//Method called to setup the toolbar
+-(void)setupToolbar
+{
+    //Tool Bar Properties
+    int toolBarX = 0;
+    int toolBarY = 0;
+    //Tool Bar Configuration
+    CGRect frame = CGRectMake(toolBarX ,
+                              toolBarY,
+                              self.view.frame.size.width,
+                              44);
+    UIBarButtonItem *doneButton =
+    [[UIBarButtonItem alloc] initWithTitle:@"Done"
+                                     style:UIBarButtonItemStyleDone
+                                    target:self
+                                    action:@selector(resignFirstResponderWrapper)];
+    UIBarButtonItem *flexibleSpace =
+    [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                  target:nil
+                                                  action:nil];
+    UIToolbar *doneToolbar = [[UIToolbar alloc] initWithFrame:frame];
+    doneToolbar.barStyle = UIBarStyleDefault;
+    doneToolbar.items = [NSArray arrayWithObjects:flexibleSpace, doneButton, nil];
+    [doneToolbar sizeToFit];
+    self.searchBar.textField.inputAccessoryView = doneToolbar;
+    self.locationSearchBar.textField.inputAccessoryView = doneToolbar;
+}
+
+//Method to resign
+-(void)resignFirstResponderWrapper
+{
+    //Search bar
+    if([self.searchBar.textField isFirstResponder]){
+        [self.searchBar.textField resignFirstResponder];
+    }
+    //Location search bar
+    if([self.locationSearchBar.textField isFirstResponder]){
+        [self.locationSearchBar.textField resignFirstResponder];
+    }
 }
 
 #pragma mark - Table View Data Source
