@@ -26,7 +26,7 @@
     [[UINavigationBar appearance] setTitleTextAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
                                                            [UIColor whiteColor], NSForegroundColorAttributeName,
                                                            [UIFont fontWithName:@"HelveticaNeue-Medium" size:18.0], NSFontAttributeName, nil]];
-    [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"Burgers_Nav_Bar_Color"]
+    [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"Nav_Bar_Background_Color"]
                                        forBarMetrics:UIBarMetricsDefault];
     [self.window makeKeyAndVisible];
     return YES;

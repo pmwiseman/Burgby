@@ -12,17 +12,19 @@
 #import "PWVenueDetailViewController.h"
 #import "UIColor+Colors.h"
 #import "PWSearchTextFieldView.h"
+#import "PWNetworkManager.h"
+#import "PWStandardAlerts.h"
 
 @interface PWPrimaryViewController ()
 
 //Table View
 @property (strong, nonatomic) VenueObject *venueObject;
 @property (strong, nonatomic) PWVenueCell *cell;
-@property (strong, nonatomic) UITableView *tableView;
-@property (strong, nonatomic) UIRefreshControl *refreshControl;
 @property (strong, nonatomic) PWSearchTextFieldView *searchBar;
 @property (strong, nonatomic) PWSearchTextFieldView *locationSearchBar;
 @property (strong, nonatomic) UILabel *noResultsLabel;
+@property (strong, nonatomic) UITableView *tableView;
+@property (strong, nonatomic) UIRefreshControl *refreshControl;
 //Networking
 @property (strong, nonatomic) NSURLSession *session;
 @property (strong, nonatomic) NSURLSessionConfiguration *sessionConfiguration;
@@ -50,8 +52,12 @@ static int const navBarPlusStatusBar = 64;
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.venueList = [[NSMutableArray alloc] init];
-    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:self.navigationItem.backBarButtonItem.style target:nil action:nil];
-    [self.navigationItem setTitle:@"Discover"];
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
+                                             initWithTitle:@""
+                                             style:self.navigationItem.backBarButtonItem.style
+                                             target:nil
+                                             action:nil];
+    [self.navigationItem setTitle:@"Search"];
     [self setupTableView];
     [self setupToolbar];
     [self getCurrentLocation];
@@ -60,9 +66,19 @@ static int const navBarPlusStatusBar = 64;
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(venuesLoaded:)
+                                                 name:@"venuSearchComplete"
+                                               object:nil];
 }
 
-#pragma mark - View Setup
+-(void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self cancelCurrentSesssionCalls];
+}
+
+#pragma mark - View Configuration
 
 -(void)setupTableView
 {
@@ -102,7 +118,6 @@ static int const navBarPlusStatusBar = 64;
     [self.searchBar setStandardPlaceholderWithText:@"Type of food, etc..."];
     self.searchBar.textField.delegate = self;
     self.searchBar.textField.tag = 0;
-    //[self.searchBar setBackgroundImage:[UIImage imageNamed:@"Burgers_Nav_Bar_Color"]];
     [self.view addSubview:self.searchBar];
     //Location Search Bar
     int locationSearchBarX = 0;
@@ -118,7 +133,6 @@ static int const navBarPlusStatusBar = 64;
     [self.locationSearchBar setStandardPlaceholderWithText:@"Location"];
     self.locationSearchBar.textField.delegate = self;
     self.locationSearchBar.textField.tag = 1;
-    //[self.locationSearchBar setBackgroundImage:[UIImage imageNamed:@"Burgers_Nav_Bar_Color"]];
     [self.view addSubview:self.locationSearchBar];
     //No Results Label
     int noResultsLabelX = 0;
@@ -182,7 +196,22 @@ static int const navBarPlusStatusBar = 64;
     }
 }
 
-#pragma mark - Table View Data Source
+-(void)startRefreshControl {
+    if(![self.refreshControl isRefreshing]){
+        [self.tableView setContentOffset:CGPointMake(0, -64) animated:YES];
+        [self.refreshControl beginRefreshing];
+        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    }
+}
+
+-(void)stopRefreshControl {
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    if([self.refreshControl isRefreshing]){
+        [self.refreshControl endRefreshing];
+    }
+}
+
+#pragma mark - UITableView Data Source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
@@ -250,6 +279,8 @@ static int const navBarPlusStatusBar = 64;
     return height;
 }
 
+#pragma mark - UITableView Delegate
+
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     VenueObject *object = [self.venueList objectAtIndex:indexPath.row];
@@ -304,7 +335,7 @@ static int const navBarPlusStatusBar = 64;
     }
 }
 
-#pragma mark - Location
+#pragma mark - Location Services
 
 //Get the current user location
 -(void)getCurrentLocation
@@ -370,134 +401,48 @@ static int const navBarPlusStatusBar = 64;
     [self.view.window.rootViewController presentViewController:alert animated:YES completion:nil];
 }
 
-#pragma mark - Networking Calls
+#pragma mark - Notification Center
+
+-(void)venuesLoaded:(NSNotification *)notification {
+    if([[notification.userInfo objectForKey:@"status"]  isEqual:@1]){
+        self.venueList = [notification.userInfo objectForKey:@"results"];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self stopRefreshControl];
+            self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+            [self.tableView reloadData];
+        });
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self stopRefreshControl];
+            UIAlertController *alert = [PWStandardAlerts networkErrorAlertController];
+            UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            }];
+            [alert addAction:dismissAction];
+            [self presentViewController:alert animated:YES completion:nil];
+        });
+    }
+}
+
+#pragma mark - Networking
 
 -(void)getNearbyFood
 {
-    if(![self.refreshControl isRefreshing]){
-        [self.tableView setContentOffset:CGPointMake(0, -64) animated:YES];
-        [self.refreshControl beginRefreshing];
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    }
-    NSString *text;
-    if(self.searchBar.textField.text.length == 0){
-        text = @"burgers";
-    } else {
-        text = [self.searchBar.textField.text stringByReplacingOccurrencesOfString:@" " withString:@"+"];
-    }
+    [self startRefreshControl];
     self.sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSString *fourSquareDataUrlString;
-    if([self.locationSearchBar.textField.text isEqualToString:@"Current Location"]){
-        fourSquareDataUrlString = [NSString stringWithFormat:@"https://api.foursquare.com/v2/venues/search?client_id=%@&client_secret=%@&v=20130815&ll=%f,%f&query=%@",
-                                             clientId,
-                                             clientSecret,
-                                             self.currentLocation.coordinate.latitude,
-                                             self.currentLocation.coordinate.longitude,
-                                             text];
-    } else {
-        fourSquareDataUrlString = [NSString stringWithFormat:@"https://api.foursquare.com/v2/venues/search?client_id=%@&client_secret=%@&v=20130815&near=%@&query=%@",
-                                   clientId,
-                                   clientSecret,
-                                   self.locationSearchBar.textField.text,
-                                   text];
-    }
-    
     if(!self.session){
         self.session = [NSURLSession sessionWithConfiguration:self.sessionConfiguration
                                                      delegate:self
                                                 delegateQueue:nil];
     }
-    NSURLSessionDataTask *dataTask = [self.session dataTaskWithURL:[NSURL URLWithString:fourSquareDataUrlString] completionHandler:^(NSData * _Nullable data,
-                            NSURLResponse * _Nullable response,
-                            NSError * _Nullable error) {
-        if(!error){
-            NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse *)response;
-            if(urlResponse.statusCode == 200){
-                NSError *jsonError;
-                NSDictionary *responseObject =
-                [NSJSONSerialization JSONObjectWithData:data
-                                                options:NSJSONReadingAllowFragments
-                                                  error:&jsonError];
-                NSMutableArray *returnedResults = [[NSMutableArray alloc] init];
-                if(!jsonError){
-                    NSDictionary *responseDictionary = responseObject[@"response"];
-                    NSArray *venuesArray = responseDictionary[@"venues"];
-                    for(NSDictionary *dictionary in venuesArray){
-                        //Lat and Lon
-                        NSString *tempLat = [dictionary valueForKeyPath:@"location.lat"];
-                        NSString *tempLon = [dictionary valueForKeyPath:@"location.lng"];
-                        float lat = (CGFloat)[tempLat floatValue];
-                        float lon = (CGFloat)[tempLon floatValue];
-                        //Address
-                        NSArray *addressArray = [dictionary valueForKeyPath:@"location.formattedAddress"];
-                        NSString *addressString;
-                        if([addressArray count] == 2){
-                            addressString = [NSString stringWithFormat:@"%@, %@", addressArray[0], addressArray[1]];
-                        } else {
-                            addressString = [NSString stringWithFormat:@"%@, %@, %@", addressArray[0], addressArray[1], addressArray[2]];
-                        }
-                        CLLocation *currentLocation =
-                        [[CLLocation alloc] initWithLatitude:self.currentLocation.coordinate.latitude
-                                                   longitude:self.currentLocation.coordinate.longitude];
-                        CLLocation *venueLocation = [[CLLocation alloc] initWithLatitude:lat longitude:lon];
-                        CLLocationDistance distance = [venueLocation distanceFromLocation:currentLocation];
-                        NSString *distanceString = [NSString stringWithFormat:@"%.02f", distance/1609.34];
-                        VenueObject *venueObject =
-                        [[VenueObject alloc] initWithLatitude:lat
-                                                    longitude:lon
-                                                         name:dictionary[@"name"]
-                                                      address:addressString
-                                                     distance:distanceString
-                                            simplifiedAddress:addressArray[0]
-                                                      venueId:dictionary[@"id"]
-                                                  phoneNumber:[dictionary valueForKeyPath:@"contact.formattedPhone"]
-                                                      website:dictionary[@"url"]];
-                        [returnedResults addObject:venueObject];
-                    }
-                    self.venueList = returnedResults;
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                        if([self.refreshControl isRefreshing]){
-                            [self.refreshControl endRefreshing];
-                        }
-                        self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-                        [self.tableView reloadData];
-                    });
-                }
-            } else {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                    if([self.refreshControl isRefreshing]){
-                        [self.refreshControl endRefreshing];
-                    }
-                    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Network Error"
-                                                                                   message:@"Check to make sure that your location services are on and you are connected to a network"
-                                                                            preferredStyle:UIAlertControllerStyleAlert];
-                    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                        [self dismissViewControllerAnimated:YES completion:nil];
-                    }];
-                    [alert addAction:dismissAction];
-                    [self presentViewController:alert animated:YES completion:nil];
-                });
-            }
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                if([self.refreshControl isRefreshing]){
-                    [self.refreshControl endRefreshing];
-                }
-                UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Network Error"
-                                                                               message:@"Check to make sure that your location services are on and you are connected to a network"
-                                                                        preferredStyle:UIAlertControllerStyleAlert];
-                UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                    [self dismissViewControllerAnimated:YES completion:nil];
-                }];
-                [alert addAction:dismissAction];
-                [self presentViewController:alert animated:YES completion:nil];
-            });
-        }
-    }];
-    [dataTask resume];
+    [PWNetworkManager getNearbyFoodWithLocationString:self.locationSearchBar.textField.text
+                                         searchString:self.searchBar.textField.text
+                                             latitude:self.currentLocation.coordinate.latitude
+                                            longitude:self.currentLocation.coordinate.longitude
+                                           urlSession:self.session];
+}
+
+-(void)cancelCurrentSesssionCalls {
+    [self.session invalidateAndCancel];
 }
 
 @end
