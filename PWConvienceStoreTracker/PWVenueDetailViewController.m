@@ -243,32 +243,32 @@ static NSString * const clientSecret = @"QLITWC3K5U3PASW0BRGR5IQMZJE04NYSC5HQDH3
 
 -(void)setupMapView
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        //Map
-        int mapViewX = 0;
-        int mapViewY = 202;
-        int mapViewWidth = self.view.frame.size.width;
-        int mapViewHeight = 150;
-        CGRect mapViewFrame = CGRectMake(mapViewX,
-                                         mapViewY,
-                                         mapViewWidth,
-                                         mapViewHeight);
-        self.mapView = [[MKMapView alloc] initWithFrame:mapViewFrame];
-        self.mapView.zoomEnabled = YES;
-        [self.scrollViewContainer addSubview:self.mapView];
-        [self.scrollViewContainer bringSubviewToFront:self.mapView];
-        CLLocationCoordinate2D coordinate =
-        CLLocationCoordinate2DMake(self.venueObject.latitude,
-                                   self.venueObject.longitude);
-        MKCoordinateSpan span = MKCoordinateSpanMake(0.02f, 0.02f);
-        MKCoordinateRegion region = MKCoordinateRegionMake(coordinate, span);
-        self.mapView.region = region;
-        //Add annotation
-        MKPointAnnotation *pointAnnotation = [[MKPointAnnotation alloc] init];
-        pointAnnotation.coordinate = coordinate;
-        pointAnnotation.title = @"Current Location";
-        [self.mapView addAnnotation:pointAnnotation];
-    });
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        //Map
+//        int mapViewX = 0;
+//        int mapViewY = 202;
+//        int mapViewWidth = self.view.frame.size.width;
+//        int mapViewHeight = 150;
+//        CGRect mapViewFrame = CGRectMake(mapViewX,
+//                                         mapViewY,
+//                                         mapViewWidth,
+//                                         mapViewHeight);
+//        self.mapView = [[MKMapView alloc] initWithFrame:mapViewFrame];
+//        self.mapView.zoomEnabled = YES;
+//        [self.scrollViewContainer addSubview:self.mapView];
+//        [self.scrollViewContainer bringSubviewToFront:self.mapView];
+//        CLLocationCoordinate2D coordinate =
+//        CLLocationCoordinate2DMake(self.venueObject.latitude,
+//                                   self.venueObject.longitude);
+//        MKCoordinateSpan span = MKCoordinateSpanMake(0.02f, 0.02f);
+//        MKCoordinateRegion region = MKCoordinateRegionMake(coordinate, span);
+//        self.mapView.region = region;
+//        //Add annotation
+//        MKPointAnnotation *pointAnnotation = [[MKPointAnnotation alloc] init];
+//        pointAnnotation.coordinate = coordinate;
+//        pointAnnotation.title = @"Current Location";
+//        [self.mapView addAnnotation:pointAnnotation];
+//    });
 }
 
 -(UIStatusBarStyle)preferredStatusBarStyle

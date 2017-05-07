@@ -7,24 +7,22 @@
 //
 
 #import "PWPrimaryViewController.h"
-#import "PWVenueCell.h"
 #import "VenueObject.h"
 #import "PWVenueDetailViewController.h"
 #import "UIColor+Colors.h"
-#import "PWSearchTextFieldView.h"
 #import "PWNetworkManager.h"
 #import "PWStandardAlerts.h"
+#import "PWVenueCell.h"
+#import "PWSearchTextFieldView.h"
 
 @interface PWPrimaryViewController ()
 
 //Table View
-@property (strong, nonatomic) VenueObject *venueObject;
-@property (strong, nonatomic) PWVenueCell *cell;
+@property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) PWSearchTextFieldView *searchBar;
 @property (strong, nonatomic) PWSearchTextFieldView *locationSearchBar;
-@property (strong, nonatomic) UILabel *noResultsLabel;
-@property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) UIRefreshControl *refreshControl;
+@property (strong, nonatomic) UILabel *noResultsLabel;
 //Networking
 @property (strong, nonatomic) NSURLSession *session;
 @property (strong, nonatomic) NSURLSessionConfiguration *sessionConfiguration;
@@ -58,14 +56,18 @@ static int const navBarPlusStatusBar = 64;
                                              target:nil
                                              action:nil];
     [self.navigationItem setTitle:@"Search"];
-    [self setupTableView];
-    [self setupToolbar];
+    [self configureView];
+    [self configureToolbar];
     [self getCurrentLocation];
 }
 
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    self.sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    self.session = [NSURLSession sessionWithConfiguration:self.sessionConfiguration
+                                                 delegate:self
+                                            delegateQueue:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(venuesLoaded:)
                                                  name:@"venuSearchComplete"
@@ -80,9 +82,8 @@ static int const navBarPlusStatusBar = 64;
 
 #pragma mark - View Configuration
 
--(void)setupTableView
+-(void)configureView
 {
-    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
     int tableViewX = 0;
     int tableViewY = 75;
     int tableViewWidth = self.view.frame.size.width;
@@ -93,8 +94,6 @@ static int const navBarPlusStatusBar = 64;
                                        tableViewHeight);
     self.tableView = [[UITableView alloc] initWithFrame:tableViewFrame];
     self.tableView.backgroundColor = [UIColor whiteColor];
-    [self.tableView registerClass:[PWVenueCell class]
-           forCellReuseIdentifier:cellIdentifier];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
@@ -132,6 +131,7 @@ static int const navBarPlusStatusBar = 64;
     self.locationSearchBar.locationMode = YES;
     [self.locationSearchBar setStandardPlaceholderWithText:@"Location"];
     self.locationSearchBar.textField.delegate = self;
+    //        self.locationSearchBar.textField.delegate = self;
     self.locationSearchBar.textField.tag = 1;
     [self.view addSubview:self.locationSearchBar];
     //No Results Label
@@ -156,7 +156,7 @@ static int const navBarPlusStatusBar = 64;
 }
 
 //Method called to setup the toolbar
--(void)setupToolbar
+-(void)configureToolbar
 {
     //Tool Bar Properties
     int toolBarX = 0;
@@ -239,42 +239,69 @@ static int const navBarPlusStatusBar = 64;
 -(UITableViewCell *)tableView:(UITableView *)tableView
         cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    self.venueObject = [self.venueList objectAtIndex:indexPath.row];
-    CGSize tempRestaurantNameSize = [self.venueObject.name sizeWithAttributes:@{NSFontAttributeName: [UIFont systemFontOfSize:17.0]}];
-    if(tempRestaurantNameSize.width > 270){
-        self.cell = [[PWVenueCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                       reuseIdentifier:cellIdentifier
-                                            nameHeight:44];
-    } else {
-        self.cell = [[PWVenueCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                       reuseIdentifier:cellIdentifier
-                                            nameHeight:20];
-    }
-    self.cell.nameLabel.text = self.venueObject.name;
-    self.cell.addressTextView.text = self.venueObject.address;
-    if([self.locationSearchBar.textField.text isEqualToString:@"Current Location"]){
-        if([self.cell.distanceLabel isHidden]){
-            [self.cell.distanceLabel setHighlighted:YES];
+    VenueObject *venueObject = [self.venueList objectAtIndex:indexPath.row];
+    //name frame for text
+    CGRect nameFrame = [PWVenueCell getTextSize:venueObject.name
+                                       fontSize:17.0
+                                   boundingSize:CGSizeMake([PWVenueCell getStandardNameWidthWithFrame:self.view.frame],
+                                                           CGFLOAT_MAX)];
+    //address frame for text
+    CGRect addressFrame = [PWVenueCell getTextSize:venueObject.address
+                                          fontSize:12.0
+                                      boundingSize:CGSizeMake([PWVenueCell getStandardAddressWidthWithFrame:self.view.frame], CGFLOAT_MAX)];
+    //cell height
+    CGFloat cellHeight = [PWVenueCell getCellHeightWithAddressFrame:addressFrame
+                                                          nameFrame:nameFrame];
+    //cell
+    PWVenueCell *cell = [[PWVenueCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                           reuseIdentifier:cellIdentifier
+                                                nameHeight:nameFrame.size.height
+                                             addressHeight:addressFrame.size.height
+                                                cellHeight:cellHeight
+                                                 cellWidth:self.view.frame.size.width];
+    cell.nameLabel.text = venueObject.name;
+    cell.addressLabel.text = venueObject.address;
+    NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration
+                                                          delegate:self
+                                                     delegateQueue:nil];
+    if(venueObject.cachedImage || [venueObject.defaultImageUrlString isEqualToString:@"default"]){
+        if([venueObject.defaultImageUrlString isEqualToString:@"default"]){
+            cell.backgroundImageView.image = [UIImage imageNamed:@"No_Image"];
+        } else {
+            cell.backgroundImageView.image = venueObject.cachedImage;
         }
-        self.cell.distanceLabel.text = [NSString stringWithFormat:@"%@mi", self.venueObject.distance];
     } else {
-        [self.cell.distanceLabel setHidden:YES];
+        [PWNetworkManager getVenueImageWithVenue:venueObject session:session completionBlock:^(NSString *imageUrlString) {
+            [PWNetworkManager loadImageWithUrlString:venueObject.defaultImageUrlString completionBlock:^(UIImage *image) {
+                venueObject.cachedImage = image;
+                PWVenueCell *updateCell = [tableView cellForRowAtIndexPath:indexPath];
+                if(updateCell){
+                    updateCell.backgroundImageView.image = image;
+                }
+            }];
+        }];
+    }
+//    [cell.backgroundImageView getVenueImagesWithVenueId:venueObject.venueId session:session];
+    if([self.locationSearchBar.textField.text isEqualToString:@"Current Location"]){
+        if([cell.distanceLabel isHidden]){
+            [cell.distanceLabel setHighlighted:YES];
+        }
+        cell.distanceLabel.text = [NSString stringWithFormat:@"%@mi", venueObject.distance];
+    } else {
+        [cell.distanceLabel setHidden:YES];
     }
     
-    
-    return self.cell;
+    return cell;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     VenueObject *object = [self.venueList objectAtIndex:indexPath.row];
-    CGSize tempRestaurantNameSize = [object.name sizeWithAttributes:@{NSFontAttributeName: [UIFont systemFontOfSize:17.0]}];
-    int height;
-    if(tempRestaurantNameSize.width > 270){
-        height = 94;
-    } else {
-        height = 70;
-    }
+    CGFloat height = [PWVenueCell getCellHeightWithAddress:object.address
+                                                      name:object.name
+                                              addressWidth:[PWVenueCell getStandardAddressWidthWithFrame:self.view.frame]
+                                                 nameWidth:[PWVenueCell getStandardNameWidthWithFrame:self.view.frame]];
     
     return height;
 }
@@ -414,6 +441,8 @@ static int const navBarPlusStatusBar = 64;
     } else {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self stopRefreshControl];
+            NSError *error = [notification.userInfo objectForKey:@"error"];
+            NSLog(@"ERROR: %@", error);
             UIAlertController *alert = [PWStandardAlerts networkErrorAlertController];
             UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             }];
@@ -428,12 +457,6 @@ static int const navBarPlusStatusBar = 64;
 -(void)getNearbyFood
 {
     [self startRefreshControl];
-    self.sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    if(!self.session){
-        self.session = [NSURLSession sessionWithConfiguration:self.sessionConfiguration
-                                                     delegate:self
-                                                delegateQueue:nil];
-    }
     [PWNetworkManager getNearbyFoodWithLocationString:self.locationSearchBar.textField.text
                                          searchString:self.searchBar.textField.text
                                              latitude:self.currentLocation.coordinate.latitude

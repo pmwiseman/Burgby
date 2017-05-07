@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
+#import "VenueObject.h"
 
 @interface PWNetworkManager : NSObject
 
@@ -17,5 +18,10 @@
                               latitude:(CGFloat)latitude
                              longitude:(CGFloat)longitude
                             urlSession:(NSURLSession *)session;
++(void)getVenueImageWithVenue:(VenueObject *)venue
+                       session:(NSURLSession *)session
+               completionBlock:(void (^)(NSString *imageUrlString))processUrl;
++(void)loadImageWithUrlString:(NSString *)urlString
+              completionBlock:(void (^)(UIImage *image))processImage;
 
 @end

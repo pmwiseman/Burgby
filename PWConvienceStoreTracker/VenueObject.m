@@ -19,6 +19,7 @@
                         venueId:(NSString *)theVenueId
                     phoneNumber:(NSString *)thePhoneNumber
                         website:(NSString *)theWebsite
+                      urlString:(NSString *)theDefaultImageUrlString
 {
     self = [super init];
     if(self){
@@ -31,6 +32,7 @@
         self.venueId = theVenueId;
         self.phoneNumber = thePhoneNumber;
         self.website = theWebsite;
+        self.defaultImageUrlString = theDefaultImageUrlString;
     }
     
     return self;

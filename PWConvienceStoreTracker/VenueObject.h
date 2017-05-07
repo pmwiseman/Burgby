@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @interface VenueObject : NSObject
 
@@ -19,6 +20,8 @@
 @property (strong, nonatomic) NSString *venueId;
 @property (strong, nonatomic) NSString *phoneNumber;
 @property (strong, nonatomic) NSString *website;
+@property (strong, nonatomic) NSString *defaultImageUrlString;
+@property (strong, nonatomic) UIImage *cachedImage;
 
 -(instancetype)initWithLatitude:(float)theLat
                       longitude:(float)theLon
@@ -28,6 +31,7 @@
               simplifiedAddress:(NSString *)theSimplifiedAddress
                         venueId:(NSString *)theVenueId
                     phoneNumber:(NSString *)thePhoneNumber
-                        website:(NSString *)theWebsite;
+                        website:(NSString *)theWebsite
+                      urlString:(NSString *)theDefaultImageUrlString;
 
 @end
