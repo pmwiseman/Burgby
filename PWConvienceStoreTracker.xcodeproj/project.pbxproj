@@ -10,6 +10,7 @@
 		3B0411321CECEBEB006B6A87 /* PWSearchTextFieldView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B0411311CECEBEB006B6A87 /* PWSearchTextFieldView.m */; };
 		3B934A1D1EB67C27009DFE59 /* PWNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B934A1C1EB67C27009DFE59 /* PWNetworkManager.m */; };
 		3B934A211EB68502009DFE59 /* PWStandardAlerts.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B934A201EB68502009DFE59 /* PWStandardAlerts.m */; };
+		3B934A251EB6F63C009DFE59 /* PWFullSizeImageVenueTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B934A241EB6F63C009DFE59 /* PWFullSizeImageVenueTableViewCell.m */; };
 		3B9A3A611CB59A6B009CD899 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B9A3A601CB59A6B009CD899 /* main.m */; };
 		3B9A3A641CB59A6B009CD899 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B9A3A631CB59A6B009CD899 /* AppDelegate.m */; };
 		3B9A3A6A1CB59A6B009CD899 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3B9A3A681CB59A6B009CD899 /* Main.storyboard */; };
@@ -22,6 +23,7 @@
 		3B9A3AAC1CB60339009CD899 /* PWPrimaryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B9A3AAB1CB60339009CD899 /* PWPrimaryViewController.m */; };
 		3B9A3AAF1CB61269009CD899 /* PWVenueDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B9A3AAE1CB61269009CD899 /* PWVenueDetailViewController.m */; };
 		3B9A3AB41CB638CD009CD899 /* UIColor+Colors.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B9A3AB31CB638CD009CD899 /* UIColor+Colors.m */; };
+		3BB8E1671EBEAE0F00A15779 /* PWImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3BB8E1661EBEAE0F00A15779 /* PWImageView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +50,8 @@
 		3B934A1C1EB67C27009DFE59 /* PWNetworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWNetworkManager.m; sourceTree = "<group>"; };
 		3B934A1F1EB68502009DFE59 /* PWStandardAlerts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWStandardAlerts.h; sourceTree = "<group>"; };
 		3B934A201EB68502009DFE59 /* PWStandardAlerts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWStandardAlerts.m; sourceTree = "<group>"; };
+		3B934A231EB6F63C009DFE59 /* PWFullSizeImageVenueTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWFullSizeImageVenueTableViewCell.h; sourceTree = "<group>"; };
+		3B934A241EB6F63C009DFE59 /* PWFullSizeImageVenueTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWFullSizeImageVenueTableViewCell.m; sourceTree = "<group>"; };
 		3B9A3A5C1CB59A6B009CD899 /* PWConvienceStoreTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PWConvienceStoreTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B9A3A601CB59A6B009CD899 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		3B9A3A621CB59A6B009CD899 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -72,6 +76,8 @@
 		3B9A3AAE1CB61269009CD899 /* PWVenueDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWVenueDetailViewController.m; sourceTree = "<group>"; };
 		3B9A3AB21CB638CD009CD899 /* UIColor+Colors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+Colors.h"; sourceTree = "<group>"; };
 		3B9A3AB31CB638CD009CD899 /* UIColor+Colors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Colors.m"; sourceTree = "<group>"; };
+		3BB8E1651EBEAE0F00A15779 /* PWImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWImageView.h; sourceTree = "<group>"; };
+		3BB8E1661EBEAE0F00A15779 /* PWImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWImageView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +110,8 @@
 			children = (
 				3B0411301CECEBEB006B6A87 /* PWSearchTextFieldView.h */,
 				3B0411311CECEBEB006B6A87 /* PWSearchTextFieldView.m */,
+				3BB8E1651EBEAE0F00A15779 /* PWImageView.h */,
+				3BB8E1661EBEAE0F00A15779 /* PWImageView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -115,6 +123,15 @@
 				3B934A1C1EB67C27009DFE59 /* PWNetworkManager.m */,
 			);
 			name = Networking;
+			sourceTree = "<group>";
+		};
+		3B934A221EB6F618009DFE59 /* Deprecated */ = {
+			isa = PBXGroup;
+			children = (
+				3B9A3AA01CB5F495009CD899 /* PWVenueCell.h */,
+				3B9A3AA11CB5F495009CD899 /* PWVenueCell.m */,
+			);
+			name = Deprecated;
 			sourceTree = "<group>";
 		};
 		3B9A3A531CB59A6B009CD899 = {
@@ -195,8 +212,9 @@
 		3B9A3A9F1CB5F474009CD899 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
-				3B9A3AA01CB5F495009CD899 /* PWVenueCell.h */,
-				3B9A3AA11CB5F495009CD899 /* PWVenueCell.m */,
+				3B934A231EB6F63C009DFE59 /* PWFullSizeImageVenueTableViewCell.h */,
+				3B934A241EB6F63C009DFE59 /* PWFullSizeImageVenueTableViewCell.m */,
+				3B934A221EB6F618009DFE59 /* Deprecated */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -362,6 +380,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3BB8E1671EBEAE0F00A15779 /* PWImageView.m in Sources */,
+				3B934A251EB6F63C009DFE59 /* PWFullSizeImageVenueTableViewCell.m in Sources */,
 				3B9A3A641CB59A6B009CD899 /* AppDelegate.m in Sources */,
 				3B9A3A981CB5C3B2009CD899 /* VenueObject.m in Sources */,
 				3B934A211EB68502009DFE59 /* PWStandardAlerts.m in Sources */,
