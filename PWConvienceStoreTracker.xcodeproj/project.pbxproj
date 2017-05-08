@@ -24,6 +24,9 @@
 		3B9A3AAF1CB61269009CD899 /* PWVenueDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B9A3AAE1CB61269009CD899 /* PWVenueDetailViewController.m */; };
 		3B9A3AB41CB638CD009CD899 /* UIColor+Colors.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B9A3AB31CB638CD009CD899 /* UIColor+Colors.m */; };
 		3BB8E1671EBEAE0F00A15779 /* PWImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3BB8E1661EBEAE0F00A15779 /* PWImageView.m */; };
+		3BB8E16D1EBFD56D00A15779 /* PWDetailActionOptionObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 3BB8E16C1EBFD56D00A15779 /* PWDetailActionOptionObject.m */; };
+		3BB8E1701EBFD58E00A15779 /* PWVenueDetailActionOptionTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3BB8E16F1EBFD58E00A15779 /* PWVenueDetailActionOptionTableViewCell.m */; };
+		3BB8E1751EBFE94C00A15779 /* PWSizeCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 3BB8E1741EBFE94C00A15779 /* PWSizeCalculator.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,6 +81,12 @@
 		3B9A3AB31CB638CD009CD899 /* UIColor+Colors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Colors.m"; sourceTree = "<group>"; };
 		3BB8E1651EBEAE0F00A15779 /* PWImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWImageView.h; sourceTree = "<group>"; };
 		3BB8E1661EBEAE0F00A15779 /* PWImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWImageView.m; sourceTree = "<group>"; };
+		3BB8E16B1EBFD56D00A15779 /* PWDetailActionOptionObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWDetailActionOptionObject.h; sourceTree = "<group>"; };
+		3BB8E16C1EBFD56D00A15779 /* PWDetailActionOptionObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWDetailActionOptionObject.m; sourceTree = "<group>"; };
+		3BB8E16E1EBFD58E00A15779 /* PWVenueDetailActionOptionTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWVenueDetailActionOptionTableViewCell.h; sourceTree = "<group>"; };
+		3BB8E16F1EBFD58E00A15779 /* PWVenueDetailActionOptionTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWVenueDetailActionOptionTableViewCell.m; sourceTree = "<group>"; };
+		3BB8E1731EBFE94C00A15779 /* PWSizeCalculator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWSizeCalculator.h; sourceTree = "<group>"; };
+		3BB8E1741EBFE94C00A15779 /* PWSizeCalculator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWSizeCalculator.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,8 +137,8 @@
 		3B934A221EB6F618009DFE59 /* Deprecated */ = {
 			isa = PBXGroup;
 			children = (
-				3B9A3AA01CB5F495009CD899 /* PWVenueCell.h */,
-				3B9A3AA11CB5F495009CD899 /* PWVenueCell.m */,
+				3B934A231EB6F63C009DFE59 /* PWFullSizeImageVenueTableViewCell.h */,
+				3B934A241EB6F63C009DFE59 /* PWFullSizeImageVenueTableViewCell.m */,
 			);
 			name = Deprecated;
 			sourceTree = "<group>";
@@ -205,6 +214,8 @@
 			children = (
 				3B9A3A961CB5C3B2009CD899 /* VenueObject.h */,
 				3B9A3A971CB5C3B2009CD899 /* VenueObject.m */,
+				3BB8E16B1EBFD56D00A15779 /* PWDetailActionOptionObject.h */,
+				3BB8E16C1EBFD56D00A15779 /* PWDetailActionOptionObject.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -212,8 +223,10 @@
 		3B9A3A9F1CB5F474009CD899 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
-				3B934A231EB6F63C009DFE59 /* PWFullSizeImageVenueTableViewCell.h */,
-				3B934A241EB6F63C009DFE59 /* PWFullSizeImageVenueTableViewCell.m */,
+				3B9A3AA01CB5F495009CD899 /* PWVenueCell.h */,
+				3B9A3AA11CB5F495009CD899 /* PWVenueCell.m */,
+				3BB8E16E1EBFD58E00A15779 /* PWVenueDetailActionOptionTableViewCell.h */,
+				3BB8E16F1EBFD58E00A15779 /* PWVenueDetailActionOptionTableViewCell.m */,
 				3B934A221EB6F618009DFE59 /* Deprecated */,
 			);
 			name = Cells;
@@ -240,13 +253,31 @@
 		3B9A3AB11CB638B1009CD899 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				3BB8E1721EBFE93500A15779 /* Size Calculation */,
+				3BB8E1711EBFD6E800A15779 /* Alerts and Errors */,
 				3B934A1E1EB682FE009DFE59 /* Networking */,
 				3B9A3AB21CB638CD009CD899 /* UIColor+Colors.h */,
 				3B9A3AB31CB638CD009CD899 /* UIColor+Colors.m */,
+			);
+			name = Utilities;
+			sourceTree = "<group>";
+		};
+		3BB8E1711EBFD6E800A15779 /* Alerts and Errors */ = {
+			isa = PBXGroup;
+			children = (
 				3B934A1F1EB68502009DFE59 /* PWStandardAlerts.h */,
 				3B934A201EB68502009DFE59 /* PWStandardAlerts.m */,
 			);
-			name = Utilities;
+			name = "Alerts and Errors";
+			sourceTree = "<group>";
+		};
+		3BB8E1721EBFE93500A15779 /* Size Calculation */ = {
+			isa = PBXGroup;
+			children = (
+				3BB8E1731EBFE94C00A15779 /* PWSizeCalculator.h */,
+				3BB8E1741EBFE94C00A15779 /* PWSizeCalculator.m */,
+			);
+			name = "Size Calculation";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -387,10 +418,13 @@
 				3B934A211EB68502009DFE59 /* PWStandardAlerts.m in Sources */,
 				3B9A3AAF1CB61269009CD899 /* PWVenueDetailViewController.m in Sources */,
 				3B0411321CECEBEB006B6A87 /* PWSearchTextFieldView.m in Sources */,
+				3BB8E1701EBFD58E00A15779 /* PWVenueDetailActionOptionTableViewCell.m in Sources */,
 				3B9A3AAC1CB60339009CD899 /* PWPrimaryViewController.m in Sources */,
 				3B9A3AB41CB638CD009CD899 /* UIColor+Colors.m in Sources */,
 				3B9A3AA21CB5F495009CD899 /* PWVenueCell.m in Sources */,
+				3BB8E16D1EBFD56D00A15779 /* PWDetailActionOptionObject.m in Sources */,
 				3B934A1D1EB67C27009DFE59 /* PWNetworkManager.m in Sources */,
+				3BB8E1751EBFE94C00A15779 /* PWSizeCalculator.m in Sources */,
 				3B9A3A611CB59A6B009CD899 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

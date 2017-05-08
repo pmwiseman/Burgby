@@ -41,6 +41,7 @@
         self.textField = [[UITextField alloc] initWithFrame:textFieldFrame];
         self.textField.returnKeyType = UIReturnKeySearch;
         [containerView addSubview:self.textField];
+        self.textField.clearButtonMode = UITextFieldViewModeAlways;
         self.textField.backgroundColor = [UIColor whiteColor];
         //setup view
         self.backgroundColor = [UIColor primaryColor];

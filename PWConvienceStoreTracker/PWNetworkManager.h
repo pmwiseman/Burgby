@@ -23,5 +23,8 @@
                completionBlock:(void (^)(NSString *imageUrlString))processUrl;
 +(void)loadImageWithUrlString:(NSString *)urlString
               completionBlock:(void (^)(UIImage *image))processImage;
++(void)getVenueImagesWithVenue:(VenueObject *)venue
+                       session:(NSURLSession *)session
+               completionBlock:(void (^)(NSString *imageUrlString))processImage;
 
 @end

@@ -7,6 +7,8 @@
 //
 
 #import "PWVenueCell.h"
+#import "PWSizeCalculator.h"
+#import "PWNetworkManager.h"
 
 @implementation PWVenueCell
 
@@ -37,11 +39,12 @@ static int const standardTextPadding = 2;
         self.backgroundImageView.clipsToBounds = YES;
         [self addSubview:self.backgroundImageView];
         //background image overlay
-        UIImageView *backgroundImageOverlayView = [[UIImageView alloc] initWithFrame:self.backgroundImageView.frame];
-        backgroundImageOverlayView.image = [UIImage imageNamed:@"Cell_Background_Image_Overlay"];
-        backgroundImageOverlayView.contentMode = UIViewContentModeScaleToFill;
-        backgroundImageOverlayView.clipsToBounds = YES;
-        [self addSubview:backgroundImageOverlayView];
+        self.backgroundImageOverlayView = [[UIImageView alloc] initWithFrame:self.backgroundImageView.frame];
+        self.backgroundImageOverlayView.image = [UIImage imageNamed:@"Cell_Background_Image_Overlay"];
+        self.backgroundImageOverlayView.contentMode = UIViewContentModeScaleToFill;
+        self.backgroundImageOverlayView.clipsToBounds = YES;
+//        [self.backgroundImageOverlayView setHidden:YES];
+        [self addSubview:self.backgroundImageOverlayView];
         //address
         self.addressLabel = [[UILabel alloc] initWithFrame:CGRectMake(standardXOffset,
                                                                       theCellHeight - theAddressHeight - standardTextPadding,
@@ -80,53 +83,61 @@ static int const standardTextPadding = 2;
     return self;
 }
 
-#pragma mark - Sizing
+#pragma mark - Styling
 
-+(CGFloat)getCellHeightWithAddressFrame:(CGRect)addressFrame
-                              nameFrame:(CGRect)nameFrame {
-    int cellHeight = 50;
-    CGFloat combinedHeight = cellHeight + nameFrame.size.height + addressFrame.size.height;
-    return combinedHeight;
+-(void)addGradientOverLayForImageLoad {
+    [self.backgroundImageOverlayView setHidden:NO];
+    if([self.backgroundImageOverlayView isHidden]){
+        
+    }
 }
 
-+(CGFloat)getCellHeightWithAddress:(NSString *)theAddress
-                              name:(NSString *)theName
-                      addressWidth:(CGFloat)addressWidth
-                         nameWidth:(CGFloat)nameWidth {
-    int cellHeight = 50;
-    CGSize standardAddressSize = CGSizeMake(addressWidth,
-                                            CGFLOAT_MAX);
-    CGSize standardNameSize = CGSizeMake(nameWidth,
-                                         CGFLOAT_MAX);
-    CGRect nameFrame = [self getTextSize:theName
-                                fontSize:17.0
-                            boundingSize:standardNameSize];
-    CGRect addressFrame = [self getTextSize:theAddress
-                                   fontSize:12.0
-                               boundingSize:standardAddressSize];
-    CGFloat combinedHeight = cellHeight + nameFrame.size.height + addressFrame.size.height;
-    return combinedHeight;
-}
+#pragma mark - Setup
 
-+(CGRect)getTextSize:(NSString *)text
-            fontSize:(CGFloat)theFontSize
-        boundingSize:(CGSize)theBoundingSize {
-    CGRect frame = [text boundingRectWithSize:theBoundingSize
-                                     options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
-                                  attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:theFontSize]}
-                                     context:nil];
-    frame.size.height = frame.size.height + standardTextPadding;
-    return frame;
-}
-
-+(CGFloat)getStandardNameWidthWithFrame:(CGRect)frame {
-    CGFloat nameWidth = frame.size.width - (standardXOffset * 3) - standardLocationWidth;
-    return ceilf(nameWidth);
-}
-
-+(CGFloat)getStandardAddressWidthWithFrame:(CGRect)frame {
-    CGFloat addressWidth = frame.size.width - (standardXOffset * 2);
-    return ceilf(addressWidth);
+-(void)setupCellWithVenueObject:(VenueObject *)venueObject
+           usingCurrentLocation:(BOOL)currentLocation {
+    self.nameLabel.text = venueObject.name;
+    self.addressLabel.text = venueObject.address;
+    NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration
+                                                          delegate:nil
+                                                     delegateQueue:nil];
+    if(venueObject.cachedImage || [venueObject.defaultImageUrlString isEqualToString:@"default"]){
+        if([venueObject.defaultImageUrlString isEqualToString:@"default"]){
+            self.backgroundImageView.image = [UIImage imageNamed:@"No_Image"];
+        } else {
+            self.backgroundImageView.image = venueObject.cachedImage;
+        }
+    } else {
+        [PWNetworkManager getVenueImageWithVenue:venueObject session:session completionBlock:^(NSString *imageUrlString) {
+            if(![imageUrlString isEqualToString:@"default"]){
+                [PWNetworkManager loadImageWithUrlString:venueObject.defaultImageUrlString completionBlock:^(UIImage *image) {
+                    venueObject.cachedImage = image;
+                    __weak PWVenueCell *updateCell = self;
+                    if(updateCell){
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [updateCell addGradientOverLayForImageLoad];
+                            updateCell.backgroundImageView.image = image;
+                        });
+                    }
+                }];
+            } else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    __weak PWVenueCell *updateCell = self;
+                    updateCell.backgroundImageView.image = [UIImage imageNamed:@"No_Image"];
+                });
+            }
+        }];
+    }
+    //    [cell.backgroundImageView getVenueImagesWithVenueId:venueObject.venueId session:session];
+    if(currentLocation){
+        if([self.distanceLabel isHidden]){
+            [self.distanceLabel setHighlighted:YES];
+        }
+        self.distanceLabel.text = [NSString stringWithFormat:@"%@mi", venueObject.distance];
+    } else {
+        [self.distanceLabel setHidden:YES];
+    }
 }
 
 @end

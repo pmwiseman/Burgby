@@ -17,4 +17,32 @@
     return alert;
 }
 
++(UIAlertController *)callPhoneConfirmationWithNumber:(NSString *)number
+{
+    NSString *numberString = [NSString stringWithFormat:@"Call %@?", number];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Telephone"
+                                                                   message:numberString
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    return alert;
+}
+
++(UIAlertController *)noPhoneNumberAvailable
+{
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Oops"
+                                                                   message:@"There is no phone number available at this time."
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    return alert;
+}
+
++(UIAlertController *)noWebpageAvailable
+{
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Oops"
+                                                                   message:@"There is no webpage available at this time."
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    return alert;
+}
+
 @end

@@ -104,7 +104,6 @@ static NSString *const imageSearchApiUrl =
                             searchLongitude:(CGFloat)longitude {
     NSMutableArray *returnedResults = [[NSMutableArray alloc] init];
     for(NSDictionary *dictionary in venues){
-        NSLog(@"DICT: %@", dictionary);
         //Lat and Lon
         NSString *tempLat = [dictionary valueForKeyPath:@"location.lat"];
         NSString *tempLon = [dictionary valueForKeyPath:@"location.lng"];
@@ -124,24 +123,6 @@ static NSString *const imageSearchApiUrl =
         CLLocation *venueLocation = [[CLLocation alloc] initWithLatitude:lat longitude:lon];
         CLLocationDistance distance = [venueLocation distanceFromLocation:currentLocation];
         NSString *distanceString = [NSString stringWithFormat:@"%.02f", distance/1609.34];
-        //Image Url
-//        NSDictionary *photos = dictionary[@"photos"];
-//        NSLog(@"IMAGE URL STRING: %@", photos);
-//        NSArray *groups = photos[@"groups"];
-//        NSString *imageUrlString = @"default";
-//        for(NSDictionary *group in groups) {
-//            NSArray *items = group[@"items"];
-//            NSDictionary *firstPhotoDictionary = [items objectAtIndex:0];
-//            NSString *prefixString = firstPhotoDictionary[@"prefix"];
-//            NSString *suffixString = firstPhotoDictionary[@"suffix"];
-//            NSNumber *width = firstPhotoDictionary[@"width"];
-//            NSNumber *height = firstPhotoDictionary[@"height"];
-//            NSString  *widthString = [NSString stringWithFormat:@"%@", width];
-//            NSString  *heightString = [NSString stringWithFormat:@"%@", height];
-//            imageUrlString = [NSString stringWithFormat:@"%@%@x%@%@", prefixString, widthString, heightString, suffixString];
-//            NSLog(@"IMAGE URL STRING: %@", imageUrlString);
-//            break;
-//        }
         //Venue Object
         VenueObject *venueObject =
         [[VenueObject alloc] initWithLatitude:lat
@@ -182,7 +163,6 @@ static NSString *const imageSearchApiUrl =
                                                        options:NSJSONReadingAllowFragments
                                                          error:&jsonError];
                        if(!jsonError){
-                           NSLog(@"RESPONSE: %@", responseObject);
                            NSDictionary *responseDictionary = responseObject[@"response"];
                            NSString *imageUrlString = @"default";
                            NSArray *photoArray = [responseDictionary valueForKeyPath:@"photos.items"];
@@ -219,6 +199,52 @@ static NSString *const imageSearchApiUrl =
         UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:url]];
         processImage(image);
     });
+}
+
++(void)getVenueImagesWithVenue:(VenueObject *)venue
+                       session:(NSURLSession *)session
+               completionBlock:(void (^)(NSString *imageUrlString))processImage
+{
+    NSString *fourSquareDataUrlString =
+    [NSString stringWithFormat:@"https://api.foursquare.com/v2/venues/%@/photos?client_id=%@&client_secret=%@&v=20160406",
+     venue.venueId,
+     clientId,
+     clientSecret];
+    NSURLSessionDataTask *dataTask =
+    [session dataTaskWithURL:[NSURL URLWithString:fourSquareDataUrlString]
+           completionHandler:^(NSData * _Nullable data,
+                               NSURLResponse * _Nullable response,
+                               NSError * _Nullable error) {
+        if(!error){
+            NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse *)response;
+            if(urlResponse.statusCode == 200){
+                NSError *jsonError;
+                NSDictionary *responseObject =
+                [NSJSONSerialization JSONObjectWithData:data
+                                                options:NSJSONReadingAllowFragments
+                                                  error:&jsonError];
+                if(!jsonError){
+                    NSString *imageUrlString = @"no image";
+                    NSDictionary *responseDictionary = responseObject[@"response"];
+                    NSArray *photoArray = [responseDictionary valueForKeyPath:@"photos.items"];
+                    if([photoArray count] > 0){
+                        NSDictionary *dictionary = [photoArray objectAtIndex:0];
+                        NSString *prefixString = dictionary[@"prefix"];
+                        NSString *suffixString = dictionary[@"suffix"];
+                        NSNumber *width = dictionary[@"width"];
+                        NSNumber *height = dictionary[@"height"];
+                        NSString  *widthString = [NSString stringWithFormat:@"%@", width];
+                        NSString  *heightString = [NSString stringWithFormat:@"%@", height];
+                        imageUrlString = [NSString stringWithFormat:@"%@%@x%@%@", prefixString, widthString, heightString, suffixString];
+                    }
+                    processImage(imageUrlString);
+                }
+            }
+        } else {
+            NSLog(@"ERROR: %@", error);
+        }
+    }];
+    [dataTask resume];
 }
 
 @end

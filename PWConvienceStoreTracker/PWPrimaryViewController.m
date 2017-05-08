@@ -14,6 +14,7 @@
 #import "PWStandardAlerts.h"
 #import "PWVenueCell.h"
 #import "PWSearchTextFieldView.h"
+#import "PWSizeCalculator.h"
 
 @interface PWPrimaryViewController ()
 
@@ -115,6 +116,7 @@ static int const navBarPlusStatusBar = 64;
                                        searchBarHeight);
     self.searchBar = [[PWSearchTextFieldView alloc] initWithFrame:searchBarFrame];
     [self.searchBar setStandardPlaceholderWithText:@"Type of food, etc..."];
+    self.searchBar.textField.text = @"Burgers";
     self.searchBar.textField.delegate = self;
     self.searchBar.textField.tag = 0;
     [self.view addSubview:self.searchBar];
@@ -241,17 +243,17 @@ static int const navBarPlusStatusBar = 64;
 {
     VenueObject *venueObject = [self.venueList objectAtIndex:indexPath.row];
     //name frame for text
-    CGRect nameFrame = [PWVenueCell getTextSize:venueObject.name
-                                       fontSize:17.0
-                                   boundingSize:CGSizeMake([PWVenueCell getStandardNameWidthWithFrame:self.view.frame],
-                                                           CGFLOAT_MAX)];
+    CGRect nameFrame = [PWSizeCalculator getTextSize:venueObject.name
+                                            fontSize:17.0
+                                        boundingSize:CGSizeMake([PWSizeCalculator getStandardNameWidthWithFrame:self.view.frame],
+                                                                CGFLOAT_MAX)];
     //address frame for text
-    CGRect addressFrame = [PWVenueCell getTextSize:venueObject.address
-                                          fontSize:12.0
-                                      boundingSize:CGSizeMake([PWVenueCell getStandardAddressWidthWithFrame:self.view.frame], CGFLOAT_MAX)];
+    CGRect addressFrame = [PWSizeCalculator getTextSize:venueObject.address
+                                               fontSize:12.0
+                                           boundingSize:CGSizeMake([PWSizeCalculator getStandardAddressWidthWithFrame:self.view.frame], CGFLOAT_MAX)];
     //cell height
-    CGFloat cellHeight = [PWVenueCell getCellHeightWithAddressFrame:addressFrame
-                                                          nameFrame:nameFrame];
+    CGFloat cellHeight = [PWSizeCalculator getCellHeightWithAddressFrame:addressFrame
+                                                               nameFrame:nameFrame];
     //cell
     PWVenueCell *cell = [[PWVenueCell alloc] initWithStyle:UITableViewCellStyleDefault
                                            reuseIdentifier:cellIdentifier
@@ -259,38 +261,8 @@ static int const navBarPlusStatusBar = 64;
                                              addressHeight:addressFrame.size.height
                                                 cellHeight:cellHeight
                                                  cellWidth:self.view.frame.size.width];
-    cell.nameLabel.text = venueObject.name;
-    cell.addressLabel.text = venueObject.address;
-    NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration
-                                                          delegate:self
-                                                     delegateQueue:nil];
-    if(venueObject.cachedImage || [venueObject.defaultImageUrlString isEqualToString:@"default"]){
-        if([venueObject.defaultImageUrlString isEqualToString:@"default"]){
-            cell.backgroundImageView.image = [UIImage imageNamed:@"No_Image"];
-        } else {
-            cell.backgroundImageView.image = venueObject.cachedImage;
-        }
-    } else {
-        [PWNetworkManager getVenueImageWithVenue:venueObject session:session completionBlock:^(NSString *imageUrlString) {
-            [PWNetworkManager loadImageWithUrlString:venueObject.defaultImageUrlString completionBlock:^(UIImage *image) {
-                venueObject.cachedImage = image;
-                PWVenueCell *updateCell = [tableView cellForRowAtIndexPath:indexPath];
-                if(updateCell){
-                    updateCell.backgroundImageView.image = image;
-                }
-            }];
-        }];
-    }
-//    [cell.backgroundImageView getVenueImagesWithVenueId:venueObject.venueId session:session];
-    if([self.locationSearchBar.textField.text isEqualToString:@"Current Location"]){
-        if([cell.distanceLabel isHidden]){
-            [cell.distanceLabel setHighlighted:YES];
-        }
-        cell.distanceLabel.text = [NSString stringWithFormat:@"%@mi", venueObject.distance];
-    } else {
-        [cell.distanceLabel setHidden:YES];
-    }
+    [cell setupCellWithVenueObject:venueObject
+              usingCurrentLocation:[self.locationSearchBar.textField.text isEqualToString:@"Current Location"]];
     
     return cell;
 }
@@ -298,10 +270,10 @@ static int const navBarPlusStatusBar = 64;
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     VenueObject *object = [self.venueList objectAtIndex:indexPath.row];
-    CGFloat height = [PWVenueCell getCellHeightWithAddress:object.address
+    CGFloat height = [PWSizeCalculator getCellHeightWithAddress:object.address
                                                       name:object.name
-                                              addressWidth:[PWVenueCell getStandardAddressWidthWithFrame:self.view.frame]
-                                                 nameWidth:[PWVenueCell getStandardNameWidthWithFrame:self.view.frame]];
+                                              addressWidth:[PWSizeCalculator getStandardAddressWidthWithFrame:self.view.frame]
+                                                 nameWidth:[PWSizeCalculator getStandardNameWidthWithFrame:self.view.frame]];
     
     return height;
 }

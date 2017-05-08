@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "PWImageView.h"
+#import "VenueObject.h"
 
 @interface PWVenueCell : UITableViewCell
 
@@ -15,6 +16,7 @@
 @property (strong, nonatomic) UILabel *addressLabel;
 @property (strong, nonatomic) UILabel *distanceLabel;
 @property (strong, nonatomic) PWImageView *backgroundImageView;
+@property (strong, nonatomic) UIImageView *backgroundImageOverlayView;
 
 -(instancetype)initWithStyle:(UITableViewCellStyle)style
              reuseIdentifier:(NSString *)reuseIdentifier
@@ -22,16 +24,8 @@
                addressHeight:(int)theAddressHeight
                   cellHeight:(CGFloat)theCellHeight
                    cellWidth:(CGFloat)theCellWidth;
-+(CGRect)getTextSize:(NSString *)text
-            fontSize:(CGFloat)theFontSize
-        boundingSize:(CGSize)theBoundingSize;
-+(CGFloat)getStandardNameWidthWithFrame:(CGRect)frame;
-+(CGFloat)getCellHeightWithAddressFrame:(CGRect)addressFrame
-                              nameFrame:(CGRect)nameFrame;
-+(CGFloat)getCellHeightWithAddress:(NSString *)theAddress
-                              name:(NSString *)theName
-                      addressWidth:(CGFloat)addressWidth
-                         nameWidth:(CGFloat)nameWidth;
-+(CGFloat)getStandardAddressWidthWithFrame:(CGRect)frame;
+-(void)addGradientOverLayForImageLoad;
+-(void)setupCellWithVenueObject:(VenueObject *)venueObject
+           usingCurrentLocation:(BOOL)currentLocation;
 
 @end

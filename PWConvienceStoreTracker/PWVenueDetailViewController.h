@@ -11,7 +11,7 @@
 @import CoreLocation;
 
 @interface PWVenueDetailViewController : UIViewController <NSURLSessionDelegate,
-NSURLSessionDataDelegate>
+NSURLSessionDataDelegate, UITableViewDelegate, UITableViewDataSource>
 
 @property (strong, nonatomic) VenueObject *venueObject;
 

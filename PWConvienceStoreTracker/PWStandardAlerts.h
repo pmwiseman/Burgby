@@ -12,5 +12,8 @@
 @interface PWStandardAlerts : NSObject
 
 +(UIAlertController *)networkErrorAlertController;
++(UIAlertController *)noPhoneNumberAvailable;
++(UIAlertController *)callPhoneConfirmationWithNumber:(NSString *)number;
++(UIAlertController *)noWebpageAvailable;
 
 @end
