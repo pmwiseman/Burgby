@@ -8,6 +8,7 @@
 
 #import "PWNetworkManager.h"
 #import "VenueObject.h"
+#import "PWVenuePhotoObject.h"
 
 @implementation PWNetworkManager
 
@@ -203,7 +204,7 @@ static NSString *const imageSearchApiUrl =
 
 +(void)getVenueImagesWithVenue:(VenueObject *)venue
                        session:(NSURLSession *)session
-               completionBlock:(void (^)(NSString *imageUrlString))processImage
+               completionBlock:(void (^)(NSArray *photoUrlStringArray))processImages
 {
     NSString *fourSquareDataUrlString =
     [NSString stringWithFormat:@"https://api.foursquare.com/v2/venues/%@/photos?client_id=%@&client_secret=%@&v=20160406",
@@ -224,20 +225,25 @@ static NSString *const imageSearchApiUrl =
                                                 options:NSJSONReadingAllowFragments
                                                   error:&jsonError];
                 if(!jsonError){
-                    NSString *imageUrlString = @"no image";
+                    NSMutableArray *tempPhotoUrlStringArray = [[NSMutableArray alloc] init];
                     NSDictionary *responseDictionary = responseObject[@"response"];
                     NSArray *photoArray = [responseDictionary valueForKeyPath:@"photos.items"];
-                    if([photoArray count] > 0){
-                        NSDictionary *dictionary = [photoArray objectAtIndex:0];
+                    NSLog(@"Photo Array: %lu", (unsigned long)[photoArray count]);
+                    for(NSDictionary *dictionary in photoArray){
                         NSString *prefixString = dictionary[@"prefix"];
                         NSString *suffixString = dictionary[@"suffix"];
                         NSNumber *width = dictionary[@"width"];
                         NSNumber *height = dictionary[@"height"];
                         NSString  *widthString = [NSString stringWithFormat:@"%@", width];
                         NSString  *heightString = [NSString stringWithFormat:@"%@", height];
-                        imageUrlString = [NSString stringWithFormat:@"%@%@x%@%@", prefixString, widthString, heightString, suffixString];
+                        NSString *imageUrlString = [NSString stringWithFormat:@"%@%@x%@%@",
+                                                    prefixString, widthString, heightString, suffixString];
+                        PWVenuePhotoObject *object = [[PWVenuePhotoObject alloc]
+                                                      initWithPhotoUrlString:imageUrlString];
+                        [tempPhotoUrlStringArray addObject:object];
                     }
-                    processImage(imageUrlString);
+                    NSArray *photoUrlStringArray = [NSArray arrayWithArray:tempPhotoUrlStringArray];
+                    processImages(photoUrlStringArray);
                 }
             }
         } else {

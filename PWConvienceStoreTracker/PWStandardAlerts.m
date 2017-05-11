@@ -45,4 +45,18 @@
     return alert;
 }
 
++(UIAlertController *)turnOnLocationServicesDirectionsAlert {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Location Error"
+                                                                   message:@"Location Services are disabled go to Settings > Privacy > Location Services > PWPrimaryMapViewController and tap While Using"
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    return alert;
+}
+
++(UIAlertController *)locationServicesUnavailableAlert {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Location Error"
+                                                                   message:@"Location Services are disabled or a network connection is not available"
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    return alert;
+}
+
 @end

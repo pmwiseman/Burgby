@@ -30,10 +30,8 @@
 //Data
 @property (strong, nonatomic) NSMutableArray *venueList;
 //Location
-@property (strong, nonatomic) CLLocationManager *locationManager;
-@property (strong, nonatomic) CLGeocoder *geoCoder;
+@property (strong, nonatomic) PWLocationManager *locationManager;
 @property (strong, nonatomic) CLLocation *currentLocation;
-@property (assign) int previousStatusValue;
 
 @end
 
@@ -59,7 +57,8 @@ static int const navBarPlusStatusBar = 64;
     [self.navigationItem setTitle:@"Search"];
     [self configureView];
     [self configureToolbar];
-    [self getCurrentLocation];
+    self.locationManager = [[PWLocationManager alloc] init];
+    [self.locationManager configureLocationManagerWithDelegate:self];
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -85,6 +84,7 @@ static int const navBarPlusStatusBar = 64;
 
 -(void)configureView
 {
+    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
     int tableViewX = 0;
     int tableViewY = 75;
     int tableViewWidth = self.view.frame.size.width;
@@ -336,36 +336,16 @@ static int const navBarPlusStatusBar = 64;
 
 #pragma mark - Location Services
 
-//Get the current user location
--(void)getCurrentLocation
-{
-    if(!self.locationManager){
-        self.locationManager = [[CLLocationManager alloc] init];
-        self.locationManager.delegate = self;
-    }
-    self.previousStatusValue = [CLLocationManager authorizationStatus];
-    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusNotDetermined){
-        [self.locationManager requestWhenInUseAuthorization];
-    } else if([CLLocationManager authorizationStatus] != kCLAuthorizationStatusRestricted
-              && [CLLocationManager authorizationStatus] != kCLAuthorizationStatusDenied){
-        self.geoCoder = [[CLGeocoder alloc] init];
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-        self.locationManager.distanceFilter = 100.0f;
-        [self.locationManager startMonitoringSignificantLocationChanges];
-        [self.locationManager startUpdatingLocation];
-    }
-}
+
 
 -(void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
 {
     if(status == 3 || status == 4 || status == 5){
-        if(self.previousStatusValue == 0){
-            [self getCurrentLocation];
+        if(self.locationManager.previousStatusValue == 0){
+            [self.locationManager getCurrentLocation];
         }
     } else  if(status == 1 || status == 2){
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Location Error"
-                                                                       message:@"Location Services are disabled go to Settings > Privacy > Location Services > PWPrimaryMapViewController and tap While Using"
-                                                                preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertController *alert = [PWStandardAlerts turnOnLocationServicesDirectionsAlert];
         UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             [self dismissViewControllerAnimated:YES completion:nil];
         }];
@@ -374,30 +354,27 @@ static int const navBarPlusStatusBar = 64;
     }
 }
 
+//Current user location not returned
+-(void)locationManager:(CLLocationManager *)manager
+      didFailWithError:(NSError *)error
+{
+    UIAlertController *alert = [PWStandardAlerts locationServicesUnavailableAlert];
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }];
+    [alert addAction:dismissAction];
+    [self.view.window.rootViewController presentViewController:alert animated:YES completion:nil];
+}
+
 //Current user location returned
 -(void)locationManager:(CLLocationManager *)manager
     didUpdateLocations:(NSArray<CLLocation *> *)locations
 {
     //Set the current region
     self.currentLocation = [locations lastObject];
-    [self.locationManager stopUpdatingLocation];
-    [self.locationManager stopMonitoringSignificantLocationChanges];
+    [self.locationManager stopUpdatingCurrentLocation];
     //Get nearby
     [self getNearbyFood];
-}
-
-//Current user location not returned
--(void)locationManager:(CLLocationManager *)manager
-      didFailWithError:(NSError *)error
-{
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Location Error"
-                                                                   message:@"Location Services are disabled or a network connection is not available"
-                                                            preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }];
-    [alert addAction:dismissAction];
-    [self.view.window.rootViewController presentViewController:alert animated:YES completion:nil];
 }
 
 #pragma mark - Notification Center

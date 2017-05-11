@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-@import CoreLocation;
+#import "PWLocationManager.h"
 
 @interface PWPrimaryViewController : UIViewController <CLLocationManagerDelegate,
 NSURLSessionDelegate, NSURLSessionDataDelegate, UISearchBarDelegate, UITableViewDelegate,

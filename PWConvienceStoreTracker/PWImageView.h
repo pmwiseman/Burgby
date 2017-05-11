@@ -10,10 +10,4 @@
 
 @interface PWImageView : UIImageView
 
-@property (strong, nonatomic) UIImage *cachedImage;
-@property (strong, nonatomic) NSString *cache;
--(void)getImageWithUrlString:(NSString *)urlString;
--(void)getVenueImagesWithVenueId:(NSString *)venueId
-                         session:(NSURLSession *)session;
-
 @end

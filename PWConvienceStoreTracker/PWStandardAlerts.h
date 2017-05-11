@@ -15,5 +15,7 @@
 +(UIAlertController *)noPhoneNumberAvailable;
 +(UIAlertController *)callPhoneConfirmationWithNumber:(NSString *)number;
 +(UIAlertController *)noWebpageAvailable;
++(UIAlertController *)turnOnLocationServicesDirectionsAlert;
++(UIAlertController *)locationServicesUnavailableAlert;
 
 @end

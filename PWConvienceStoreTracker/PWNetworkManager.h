@@ -25,6 +25,6 @@
               completionBlock:(void (^)(UIImage *image))processImage;
 +(void)getVenueImagesWithVenue:(VenueObject *)venue
                        session:(NSURLSession *)session
-               completionBlock:(void (^)(NSString *imageUrlString))processImage;
+               completionBlock:(void (^)(NSArray *imageUrlStringArray))processImages;
 
 @end

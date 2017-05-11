@@ -14,15 +14,15 @@
 #import "PWDetailActionOptionObject.h"
 #import "PWSizeCalculator.h"
 #import "PWStandardAlerts.h"
+#import "PWVenuePhotoObject.h"
+#import "PWPhotoGalleryCollectionViewController.h"
+#import "PWStandardGalleryFlowLayout.h"
 @import MapKit;
 
 @interface PWVenueDetailViewController ()
 
 //Scroll View Container
 @property (strong, nonatomic) UIScrollView *scrollViewContainer;
-//Map View
-@property (strong, nonatomic) MKMapView *mapView;
-@property (strong, nonatomic) MKPointAnnotation *currentPointAnnotation;
 //Image View
 @property (strong, nonatomic) UIImageView *imageView;
 //Venue Info
@@ -32,12 +32,14 @@
 @property (strong, nonatomic) NSString *formattedDistanceString;
 //Action
 @property (strong, nonatomic) UITableView *tableView;
+@property (strong, nonatomic) UIButton *photoGalleryButton;
 //Cells
 @property (strong, nonatomic) NSArray *actionCellArray;
 //Networking
 @property (strong, nonatomic) NSURLSession *session;
 @property (strong, nonatomic) NSURLSessionConfiguration *sessionConfiguration;
-@property (strong, nonatomic) NSString *imageUrlString;
+@property (strong, nonatomic) PWVenuePhotoObject *photoObject;
+@property (strong, nonatomic) NSArray *photoObjectArray;
 
 @end
 
@@ -62,13 +64,20 @@ static NSString * const cellIdentifier = @"cell";
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self setupMapView];
+    if(!self.venueObject.cachedImage){
+        [self getVenueImageWithVenueId:self.venueObject];
+    } else {
+        self.imageView.image = self.venueObject.cachedImage;
+    }
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    [self getVenuImageWithVenueId:self.venueObject.venueId];
+}
+
+-(void)viewWillDisappear:(BOOL)animated {
+    [self.session  invalidateAndCancel];
 }
 
 #pragma mark - Setup View
@@ -95,6 +104,11 @@ static NSString * const cellIdentifier = @"cell";
 -(void)setupView
 {
     self.view.backgroundColor = [UIColor whiteColor];
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
+                                             initWithTitle:@""
+                                             style:self.navigationItem.backBarButtonItem.style
+                                             target:nil
+                                             action:nil];
     self.navigationItem.title = @"Info";
     //Scroll View Container
     int scrollViewX = 0;
@@ -211,41 +225,40 @@ static NSString * const cellIdentifier = @"cell";
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.scrollViewContainer addSubview:self.tableView];
-}
-
--(void)setupMapView
-{
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        //Map
-//        int mapViewX = 0;
-//        int mapViewY = 202;
-//        int mapViewWidth = self.view.frame.size.width;
-//        int mapViewHeight = 150;
-//        CGRect mapViewFrame = CGRectMake(mapViewX,
-//                                         mapViewY,
-//                                         mapViewWidth,
-//                                         mapViewHeight);
-//        self.mapView = [[MKMapView alloc] initWithFrame:mapViewFrame];
-//        self.mapView.zoomEnabled = YES;
-//        [self.scrollViewContainer addSubview:self.mapView];
-//        [self.scrollViewContainer bringSubviewToFront:self.mapView];
-//        CLLocationCoordinate2D coordinate =
-//        CLLocationCoordinate2DMake(self.venueObject.latitude,
-//                                   self.venueObject.longitude);
-//        MKCoordinateSpan span = MKCoordinateSpanMake(0.02f, 0.02f);
-//        MKCoordinateRegion region = MKCoordinateRegionMake(coordinate, span);
-//        self.mapView.region = region;
-//        //Add annotation
-//        MKPointAnnotation *pointAnnotation = [[MKPointAnnotation alloc] init];
-//        pointAnnotation.coordinate = coordinate;
-//        pointAnnotation.title = @"Current Location";
-//        [self.mapView addAnnotation:pointAnnotation];
-//    });
+    //Photo Galler Button
+    self.photoGalleryButton = [[UIButton alloc]
+                             initWithFrame:CGRectMake(8, self.tableView.frame.origin.y
+                                                      + self.tableView.frame.size.height
+                                                      + 28,
+                                                      self.view.frame.size.width - 16,
+                                                      44)];
+    [self.photoGalleryButton addTarget:self
+                                action:@selector(pushPhotoGallerViewController)
+                      forControlEvents:UIControlEventTouchUpInside];
+    self.photoGalleryButton.backgroundColor = [UIColor primaryColor];
+    self.photoGalleryButton.layer.cornerRadius = 10.0;
+    self.photoGalleryButton.layer.masksToBounds = YES;
+    [self.photoGalleryButton setTitleColor:[UIColor whiteColor]
+                                  forState:UIControlStateNormal];
+    [self.photoGalleryButton setTitle:@"See Photos!"
+                             forState:UIControlStateNormal];
+    [self.scrollViewContainer addSubview:self.photoGalleryButton];
 }
 
 -(UIStatusBarStyle)preferredStatusBarStyle
 {
     return UIStatusBarStyleLightContent;
+}
+
+#pragma mark - Navigation Configuration
+
+-(void)pushPhotoGallerViewController {
+    PWPhotoGalleryCollectionViewController *photoGalleryCollectionViewController =
+    [[PWPhotoGalleryCollectionViewController alloc]
+     initWithCollectionViewLayout:[PWStandardGalleryFlowLayout generateStandardPhotoGalleryFlowLayout]];
+    photoGalleryCollectionViewController.venueObject = self.venueObject;
+    [self.navigationController pushViewController:photoGalleryCollectionViewController
+                                         animated:YES];
 }
 
 #pragma mark - Option Actions
@@ -359,29 +372,38 @@ static NSString * const cellIdentifier = @"cell";
 
 #pragma mark - Networking Calls
 
--(void)getVenuImageWithVenueId:(NSString *)venueId {
+-(void)getVenueImageWithVenueId:(VenueObject *)venueObject {
     self.sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    if(!self.session){
-        self.session = [NSURLSession sessionWithConfiguration:self.sessionConfiguration
-                                                     delegate:self
-                                                delegateQueue:nil];
-    }
-    [PWNetworkManager getVenueImagesWithVenue:self.venueObject
-                                      session:self.session
-                              completionBlock:^(NSString *imageUrlString) {
-        self.imageUrlString = imageUrlString;
-        if(![self.imageUrlString isEqualToString:@"no image"]){
-            [PWNetworkManager loadImageWithUrlString:self.imageUrlString completionBlock:^(UIImage *image) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    self.imageView.image = image;
-                });
-            }];
+    self.session = [NSURLSession sessionWithConfiguration:self.sessionConfiguration
+                                                 delegate:self
+                                            delegateQueue:nil];
+    if(venueObject.cachedImage || [venueObject.defaultImageUrlString isEqualToString:@"default"]){
+        if([venueObject.defaultImageUrlString isEqualToString:@"default"]){
+            self.imageView.image = [UIImage imageNamed:@"No_Image"];
         } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.imageView.image = [UIImage imageNamed:@"No_Image"];
-            });
+            self.imageView.image = venueObject.cachedImage;
         }
-    }];
+    } else {
+        [PWNetworkManager getVenueImageWithVenue:venueObject
+                                         session:self.session
+                                 completionBlock:^(NSString *imageUrlString) {
+            __weak UIImageView *weakImageView = self.imageView;
+            if(![imageUrlString isEqualToString:@"default"]){
+                [PWNetworkManager loadImageWithUrlString:venueObject.defaultImageUrlString completionBlock:^(UIImage *image) {
+                    venueObject.cachedImage = image;
+                    if(weakImageView){
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            weakImageView.image = image;
+                        });
+                    }
+                }];
+            } else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    weakImageView.image = [UIImage imageNamed:@"No_Image"];
+                });
+            }
+        }];
+    }
 }
 
 @end

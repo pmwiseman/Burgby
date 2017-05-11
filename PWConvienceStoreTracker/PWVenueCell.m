@@ -129,7 +129,6 @@ static int const standardTextPadding = 2;
             }
         }];
     }
-    //    [cell.backgroundImageView getVenueImagesWithVenueId:venueObject.venueId session:session];
     if(currentLocation){
         if([self.distanceLabel isHidden]){
             [self.distanceLabel setHighlighted:YES];
