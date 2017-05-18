@@ -15,6 +15,7 @@
 #import "PWVenueCell.h"
 #import "PWSearchTextFieldView.h"
 #import "PWSizeCalculator.h"
+#import "PWLocationManager.h"
 
 @interface PWPrimaryViewController ()
 
@@ -28,10 +29,9 @@
 @property (strong, nonatomic) NSURLSession *session;
 @property (strong, nonatomic) NSURLSessionConfiguration *sessionConfiguration;
 //Data
-@property (strong, nonatomic) NSMutableArray *venueList;
+@property (strong, nonatomic) NSArray *venueList;
 //Location
 @property (strong, nonatomic) PWLocationManager *locationManager;
-@property (strong, nonatomic) CLLocation *currentLocation;
 
 @end
 
@@ -48,36 +48,35 @@ static int const navBarPlusStatusBar = 64;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.venueList = [[NSMutableArray alloc] init];
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
                                              initWithTitle:@""
                                              style:self.navigationItem.backBarButtonItem.style
                                              target:nil
                                              action:nil];
     [self.navigationItem setTitle:@"Search"];
-    [self configureView];
-    [self configureToolbar];
-    self.locationManager = [[PWLocationManager alloc] init];
-    [self.locationManager configureLocationManagerWithDelegate:self];
+    self.sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    self.session = [NSURLSession sessionWithConfiguration:self.sessionConfiguration
+                                                 delegate:self
+                                            delegateQueue:nil];
+    self.locationManager = [PWLocationManager sharedManager];
+    [self updateCurrentLocationAndGetNearbyFood];
 }
 
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    self.sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    self.session = [NSURLSession sessionWithConfiguration:self.sessionConfiguration
-                                                 delegate:self
-                                            delegateQueue:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(venuesLoaded:)
-                                                 name:@"venuSearchComplete"
-                                               object:nil];
 }
 
 -(void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [self cancelCurrentSesssionCalls];
+}
+
+-(void)loadView {
+    [super loadView];
+    self.view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    [self configureView];
+    [self configureToolbar];
 }
 
 #pragma mark - View Configuration
@@ -200,6 +199,7 @@ static int const navBarPlusStatusBar = 64;
 
 -(void)startRefreshControl {
     if(![self.refreshControl isRefreshing]){
+        [self.refreshControl setNeedsDisplay];
         [self.tableView setContentOffset:CGPointMake(0, -64) animated:YES];
         [self.refreshControl beginRefreshing];
         self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -334,83 +334,57 @@ static int const navBarPlusStatusBar = 64;
     }
 }
 
-#pragma mark - Location Services
-
-
-
--(void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
-{
-    if(status == 3 || status == 4 || status == 5){
-        if(self.locationManager.previousStatusValue == 0){
-            [self.locationManager getCurrentLocation];
-        }
-    } else  if(status == 1 || status == 2){
-        UIAlertController *alert = [PWStandardAlerts turnOnLocationServicesDirectionsAlert];
-        UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [self dismissViewControllerAnimated:YES completion:nil];
-        }];
-        [alert addAction:dismissAction];
-        [self.view.window.rootViewController presentViewController:alert animated:YES completion:nil];
-    }
-}
-
-//Current user location not returned
--(void)locationManager:(CLLocationManager *)manager
-      didFailWithError:(NSError *)error
-{
-    UIAlertController *alert = [PWStandardAlerts locationServicesUnavailableAlert];
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }];
-    [alert addAction:dismissAction];
-    [self.view.window.rootViewController presentViewController:alert animated:YES completion:nil];
-}
-
-//Current user location returned
--(void)locationManager:(CLLocationManager *)manager
-    didUpdateLocations:(NSArray<CLLocation *> *)locations
-{
-    //Set the current region
-    self.currentLocation = [locations lastObject];
-    [self.locationManager stopUpdatingCurrentLocation];
-    //Get nearby
-    [self getNearbyFood];
-}
-
 #pragma mark - Notification Center
 
--(void)venuesLoaded:(NSNotification *)notification {
-    if([[notification.userInfo objectForKey:@"status"]  isEqual:@1]){
-        self.venueList = [notification.userInfo objectForKey:@"results"];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self stopRefreshControl];
-            self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-            [self.tableView reloadData];
-        });
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self stopRefreshControl];
-            NSError *error = [notification.userInfo objectForKey:@"error"];
-            NSLog(@"ERROR: %@", error);
-            UIAlertController *alert = [PWStandardAlerts networkErrorAlertController];
-            UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            }];
-            [alert addAction:dismissAction];
-            [self presentViewController:alert animated:YES completion:nil];
-        });
-    }
-}
+//-(void)locationUpdated:(NSNotification *)notification {
+//    [self getNearbyFood];
+//}
+//
+//-(void)locationUpdateFailed:(NSNotification *)notification {
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        [self stopRefreshControl];
+//        [self.tableView reloadData];
+//    });
+//}
 
 #pragma mark - Networking
+
+-(void)updateCurrentLocationAndGetNearbyFood {
+    [self.locationManager queueJobForLocationUpdate:^{
+        __weak PWPrimaryViewController *weakself = self;
+        [weakself getNearbyFood];
+    }];
+}
 
 -(void)getNearbyFood
 {
     [self startRefreshControl];
     [PWNetworkManager getNearbyFoodWithLocationString:self.locationSearchBar.textField.text
                                          searchString:self.searchBar.textField.text
-                                             latitude:self.currentLocation.coordinate.latitude
-                                            longitude:self.currentLocation.coordinate.longitude
-                                           urlSession:self.session];
+                                             latitude:self.locationManager.currentLocation.coordinate.latitude
+                                            longitude:self.locationManager.currentLocation.coordinate.longitude
+                                           urlSession:self.session
+                                      completionBlock:^(NSArray *results) {
+                                          self.venueList = [NSArray arrayWithArray:results];
+                                          dispatch_async(dispatch_get_main_queue(), ^{
+                                              [self stopRefreshControl];
+                                              self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+                                              [self.tableView reloadData];
+                                          });
+                                      }
+                                         failureBlock:^(NSError *error) {
+                                             dispatch_async(dispatch_get_main_queue(), ^{
+                                                 [self stopRefreshControl];
+                                                 [self.tableView reloadData];
+                                                 UIAlertController *alert = [PWStandardAlerts networkErrorAlertController];
+                                                 UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:@"Ok"
+                                                                                                         style:UIAlertActionStyleDefault
+                                                                                                       handler:^(UIAlertAction * _Nonnull action) {
+                                                                                                       }];
+                                                 [alert addAction:dismissAction];
+                                                 [self presentViewController:alert animated:YES completion:nil];
+                                             });
+                                         }];
 }
 
 -(void)cancelCurrentSesssionCalls {

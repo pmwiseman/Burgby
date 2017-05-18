@@ -57,8 +57,6 @@ static NSString * const cellIdentifier = @"cell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self setupView];
-    [self setupCells];
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -74,6 +72,13 @@ static NSString * const cellIdentifier = @"cell";
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+}
+
+-(void)loadView {
+    [super loadView];
+    self.view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    [self setupView];
+    [self setupCells];
 }
 
 -(void)viewWillDisappear:(BOOL)animated {

@@ -17,7 +17,9 @@
                           searchString:(NSString *)searchString
                               latitude:(CGFloat)latitude
                              longitude:(CGFloat)longitude
-                            urlSession:(NSURLSession *)session;
+                            urlSession:(NSURLSession *)session
+                       completionBlock:(void (^)(NSArray *results))processVenues
+                          failureBlock:(void (^)(NSError *error))processError;
 +(void)getVenueImageWithVenue:(VenueObject *)venue
                        session:(NSURLSession *)session
                completionBlock:(void (^)(NSString *imageUrlString))processUrl;
@@ -26,5 +28,6 @@
 +(void)getVenueImagesWithVenue:(VenueObject *)venue
                        session:(NSURLSession *)session
                completionBlock:(void (^)(NSArray *imageUrlStringArray))processImages;
++(void)getTrendingVenues;
 
 @end

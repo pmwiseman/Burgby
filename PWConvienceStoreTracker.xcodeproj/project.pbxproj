@@ -8,6 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		3B0411321CECEBEB006B6A87 /* PWSearchTextFieldView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B0411311CECEBEB006B6A87 /* PWSearchTextFieldView.m */; };
+		3B61BE2E1ECA669D009005D6 /* PWDiscoverViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B61BE2D1ECA669D009005D6 /* PWDiscoverViewController.m */; };
+		3B61BE341ECA68C6009005D6 /* PWDiscoverCollageCollectionViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B61BE331ECA68C6009005D6 /* PWDiscoverCollageCollectionViewLayout.m */; };
+		3B61BE381ECA69EC009005D6 /* PWDiscoverCollageCollectionViewLayoutAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B61BE371ECA69EC009005D6 /* PWDiscoverCollageCollectionViewLayoutAttributes.m */; };
+		3B61BE3D1ECA6C41009005D6 /* PWDiscoverCollageCollectionViewLayoutSizeCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B61BE3C1ECA6C41009005D6 /* PWDiscoverCollageCollectionViewLayoutSizeCalculator.m */; };
+		3B61BE401ECA6D4E009005D6 /* PWDiscoverCollageLayoutConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B61BE3F1ECA6D4E009005D6 /* PWDiscoverCollageLayoutConfiguration.m */; };
+		3B61BE431ECA6E29009005D6 /* PWDiscoverCollageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B61BE421ECA6E29009005D6 /* PWDiscoverCollageCollectionViewCell.m */; };
+		3B61BE471ECA6F07009005D6 /* PWDiscoverCollageCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B61BE461ECA6F07009005D6 /* PWDiscoverCollageCellView.m */; };
+		3B61BE4C1ECA6F5B009005D6 /* PWBottomAlignedTextLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B61BE4B1ECA6F5B009005D6 /* PWBottomAlignedTextLabel.m */; };
+		3B61BE511ECA755F009005D6 /* PWMainTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B61BE501ECA755F009005D6 /* PWMainTabBarController.m */; };
 		3B934A1D1EB67C27009DFE59 /* PWNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B934A1C1EB67C27009DFE59 /* PWNetworkManager.m */; };
 		3B934A211EB68502009DFE59 /* PWStandardAlerts.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B934A201EB68502009DFE59 /* PWStandardAlerts.m */; };
 		3B934A251EB6F63C009DFE59 /* PWFullSizeImageVenueTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B934A241EB6F63C009DFE59 /* PWFullSizeImageVenueTableViewCell.m */; };
@@ -55,6 +64,24 @@
 /* Begin PBXFileReference section */
 		3B0411301CECEBEB006B6A87 /* PWSearchTextFieldView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWSearchTextFieldView.h; sourceTree = "<group>"; };
 		3B0411311CECEBEB006B6A87 /* PWSearchTextFieldView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWSearchTextFieldView.m; sourceTree = "<group>"; };
+		3B61BE2C1ECA669D009005D6 /* PWDiscoverViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWDiscoverViewController.h; sourceTree = "<group>"; };
+		3B61BE2D1ECA669D009005D6 /* PWDiscoverViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWDiscoverViewController.m; sourceTree = "<group>"; };
+		3B61BE321ECA68C6009005D6 /* PWDiscoverCollageCollectionViewLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWDiscoverCollageCollectionViewLayout.h; sourceTree = "<group>"; };
+		3B61BE331ECA68C6009005D6 /* PWDiscoverCollageCollectionViewLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWDiscoverCollageCollectionViewLayout.m; sourceTree = "<group>"; };
+		3B61BE361ECA69EC009005D6 /* PWDiscoverCollageCollectionViewLayoutAttributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWDiscoverCollageCollectionViewLayoutAttributes.h; sourceTree = "<group>"; };
+		3B61BE371ECA69EC009005D6 /* PWDiscoverCollageCollectionViewLayoutAttributes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWDiscoverCollageCollectionViewLayoutAttributes.m; sourceTree = "<group>"; };
+		3B61BE3B1ECA6C41009005D6 /* PWDiscoverCollageCollectionViewLayoutSizeCalculator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWDiscoverCollageCollectionViewLayoutSizeCalculator.h; sourceTree = "<group>"; };
+		3B61BE3C1ECA6C41009005D6 /* PWDiscoverCollageCollectionViewLayoutSizeCalculator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWDiscoverCollageCollectionViewLayoutSizeCalculator.m; sourceTree = "<group>"; };
+		3B61BE3E1ECA6D4E009005D6 /* PWDiscoverCollageLayoutConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWDiscoverCollageLayoutConfiguration.h; sourceTree = "<group>"; };
+		3B61BE3F1ECA6D4E009005D6 /* PWDiscoverCollageLayoutConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWDiscoverCollageLayoutConfiguration.m; sourceTree = "<group>"; };
+		3B61BE411ECA6E29009005D6 /* PWDiscoverCollageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWDiscoverCollageCollectionViewCell.h; sourceTree = "<group>"; };
+		3B61BE421ECA6E29009005D6 /* PWDiscoverCollageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWDiscoverCollageCollectionViewCell.m; sourceTree = "<group>"; };
+		3B61BE451ECA6F07009005D6 /* PWDiscoverCollageCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWDiscoverCollageCellView.h; sourceTree = "<group>"; };
+		3B61BE461ECA6F07009005D6 /* PWDiscoverCollageCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWDiscoverCollageCellView.m; sourceTree = "<group>"; };
+		3B61BE4A1ECA6F5B009005D6 /* PWBottomAlignedTextLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWBottomAlignedTextLabel.h; sourceTree = "<group>"; };
+		3B61BE4B1ECA6F5B009005D6 /* PWBottomAlignedTextLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWBottomAlignedTextLabel.m; sourceTree = "<group>"; };
+		3B61BE4F1ECA755F009005D6 /* PWMainTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWMainTabBarController.h; sourceTree = "<group>"; };
+		3B61BE501ECA755F009005D6 /* PWMainTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWMainTabBarController.m; sourceTree = "<group>"; };
 		3B934A1B1EB67C27009DFE59 /* PWNetworkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWNetworkManager.h; sourceTree = "<group>"; };
 		3B934A1C1EB67C27009DFE59 /* PWNetworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWNetworkManager.m; sourceTree = "<group>"; };
 		3B934A1F1EB68502009DFE59 /* PWStandardAlerts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWStandardAlerts.h; sourceTree = "<group>"; };
@@ -135,12 +162,70 @@
 		3B04112C1CECEAB8006B6A87 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				3B61BE491ECA6F43009005D6 /* Labels */,
+				3B61BE441ECA6ED2009005D6 /* Cell Helper Views */,
 				3B0411301CECEBEB006B6A87 /* PWSearchTextFieldView.h */,
 				3B0411311CECEBEB006B6A87 /* PWSearchTextFieldView.m */,
 				3BB8E1651EBEAE0F00A15779 /* PWImageView.h */,
 				3BB8E1661EBEAE0F00A15779 /* PWImageView.m */,
 			);
 			name = Views;
+			sourceTree = "<group>";
+		};
+		3B61BE2B1ECA667B009005D6 /* Discover */ = {
+			isa = PBXGroup;
+			children = (
+				3B61BE2C1ECA669D009005D6 /* PWDiscoverViewController.h */,
+				3B61BE2D1ECA669D009005D6 /* PWDiscoverViewController.m */,
+			);
+			name = Discover;
+			sourceTree = "<group>";
+		};
+		3B61BE351ECA6925009005D6 /* Collection View Attributes */ = {
+			isa = PBXGroup;
+			children = (
+				3B61BE361ECA69EC009005D6 /* PWDiscoverCollageCollectionViewLayoutAttributes.h */,
+				3B61BE371ECA69EC009005D6 /* PWDiscoverCollageCollectionViewLayoutAttributes.m */,
+			);
+			name = "Collection View Attributes";
+			sourceTree = "<group>";
+		};
+		3B61BE3A1ECA6B3E009005D6 /* Collection View Size Calculation */ = {
+			isa = PBXGroup;
+			children = (
+				3B61BE3B1ECA6C41009005D6 /* PWDiscoverCollageCollectionViewLayoutSizeCalculator.h */,
+				3B61BE3C1ECA6C41009005D6 /* PWDiscoverCollageCollectionViewLayoutSizeCalculator.m */,
+				3B61BE3E1ECA6D4E009005D6 /* PWDiscoverCollageLayoutConfiguration.h */,
+				3B61BE3F1ECA6D4E009005D6 /* PWDiscoverCollageLayoutConfiguration.m */,
+			);
+			name = "Collection View Size Calculation";
+			sourceTree = "<group>";
+		};
+		3B61BE441ECA6ED2009005D6 /* Cell Helper Views */ = {
+			isa = PBXGroup;
+			children = (
+				3B61BE451ECA6F07009005D6 /* PWDiscoverCollageCellView.h */,
+				3B61BE461ECA6F07009005D6 /* PWDiscoverCollageCellView.m */,
+			);
+			name = "Cell Helper Views";
+			sourceTree = "<group>";
+		};
+		3B61BE491ECA6F43009005D6 /* Labels */ = {
+			isa = PBXGroup;
+			children = (
+				3B61BE4A1ECA6F5B009005D6 /* PWBottomAlignedTextLabel.h */,
+				3B61BE4B1ECA6F5B009005D6 /* PWBottomAlignedTextLabel.m */,
+			);
+			name = Labels;
+			sourceTree = "<group>";
+		};
+		3B61BE4E1ECA753A009005D6 /* Main Tab Bar */ = {
+			isa = PBXGroup;
+			children = (
+				3B61BE4F1ECA755F009005D6 /* PWMainTabBarController.h */,
+				3B61BE501ECA755F009005D6 /* PWMainTabBarController.m */,
+			);
+			name = "Main Tab Bar";
 			sourceTree = "<group>";
 		};
 		3B934A1E1EB682FE009DFE59 /* Networking */ = {
@@ -190,6 +275,8 @@
 				3B04112C1CECEAB8006B6A87 /* Views */,
 				3B9A3A9F1CB5F474009CD899 /* Cells */,
 				3B9A3A991CB5DC9E009CD899 /* Models */,
+				3B61BE4E1ECA753A009005D6 /* Main Tab Bar */,
+				3B61BE2B1ECA667B009005D6 /* Discover */,
 				3B9A3AA61CB6029D009CD899 /* Primary Table View */,
 				3B9A3AB01CB61270009CD899 /* Venue Detail View */,
 				3BB8E1941EC3B4D900A15779 /* Photo Gallery View */,
@@ -250,6 +337,8 @@
 				3BB8E16F1EBFD58E00A15779 /* PWVenueDetailActionOptionTableViewCell.m */,
 				3BB8E1981EC3B5A900A15779 /* PWPhotoGalleryCollectionViewCell.h */,
 				3BB8E1991EC3B5A900A15779 /* PWPhotoGalleryCollectionViewCell.m */,
+				3B61BE411ECA6E29009005D6 /* PWDiscoverCollageCollectionViewCell.h */,
+				3B61BE421ECA6E29009005D6 /* PWDiscoverCollageCollectionViewCell.m */,
 				3B934A221EB6F618009DFE59 /* Deprecated */,
 			);
 			name = Cells;
@@ -328,8 +417,12 @@
 		3BB8E19E1EC3BBD300A15779 /* Collection Flow Layout */ = {
 			isa = PBXGroup;
 			children = (
+				3B61BE3A1ECA6B3E009005D6 /* Collection View Size Calculation */,
+				3B61BE351ECA6925009005D6 /* Collection View Attributes */,
 				3BB8E19F1EC3BBFF00A15779 /* PWStandardGalleryFlowLayout.h */,
 				3BB8E1A01EC3BBFF00A15779 /* PWStandardGalleryFlowLayout.m */,
+				3B61BE321ECA68C6009005D6 /* PWDiscoverCollageCollectionViewLayout.h */,
+				3B61BE331ECA68C6009005D6 /* PWDiscoverCollageCollectionViewLayout.m */,
 			);
 			name = "Collection Flow Layout";
 			sourceTree = "<group>";
@@ -465,16 +558,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3B61BE401ECA6D4E009005D6 /* PWDiscoverCollageLayoutConfiguration.m in Sources */,
 				3BB8E1671EBEAE0F00A15779 /* PWImageView.m in Sources */,
 				3B934A251EB6F63C009DFE59 /* PWFullSizeImageVenueTableViewCell.m in Sources */,
+				3B61BE4C1ECA6F5B009005D6 /* PWBottomAlignedTextLabel.m in Sources */,
 				3BB8E1A11EC3BBFF00A15779 /* PWStandardGalleryFlowLayout.m in Sources */,
 				3B9A3A641CB59A6B009CD899 /* AppDelegate.m in Sources */,
+				3B61BE431ECA6E29009005D6 /* PWDiscoverCollageCollectionViewCell.m in Sources */,
+				3B61BE3D1ECA6C41009005D6 /* PWDiscoverCollageCollectionViewLayoutSizeCalculator.m in Sources */,
 				3B9A3A981CB5C3B2009CD899 /* VenueObject.m in Sources */,
+				3B61BE381ECA69EC009005D6 /* PWDiscoverCollageCollectionViewLayoutAttributes.m in Sources */,
 				3B934A211EB68502009DFE59 /* PWStandardAlerts.m in Sources */,
 				3B9A3AAF1CB61269009CD899 /* PWVenueDetailViewController.m in Sources */,
 				3B0411321CECEBEB006B6A87 /* PWSearchTextFieldView.m in Sources */,
 				3BB8E1701EBFD58E00A15779 /* PWVenueDetailActionOptionTableViewCell.m in Sources */,
 				3B9A3AAC1CB60339009CD899 /* PWPrimaryViewController.m in Sources */,
+				3B61BE2E1ECA669D009005D6 /* PWDiscoverViewController.m in Sources */,
 				3BB8E1971EC3B52900A15779 /* PWPhotoGalleryCollectionViewController.m in Sources */,
 				3BB8E1791EC0EEA000A15779 /* PWLocationManager.m in Sources */,
 				3B9A3AB41CB638CD009CD899 /* UIColor+Colors.m in Sources */,
@@ -482,10 +581,13 @@
 				3BB8E19A1EC3B5A900A15779 /* PWPhotoGalleryCollectionViewCell.m in Sources */,
 				3BB8E1A41EC3DD2D00A15779 /* PWNoResultsLabel.m in Sources */,
 				3BB8E16D1EBFD56D00A15779 /* PWDetailActionOptionObject.m in Sources */,
+				3B61BE471ECA6F07009005D6 /* PWDiscoverCollageCellView.m in Sources */,
 				3B934A1D1EB67C27009DFE59 /* PWNetworkManager.m in Sources */,
 				3BB8E1751EBFE94C00A15779 /* PWSizeCalculator.m in Sources */,
 				3BB8E19D1EC3B6CB00A15779 /* PWVenuePhotoObject.m in Sources */,
+				3B61BE341ECA68C6009005D6 /* PWDiscoverCollageCollectionViewLayout.m in Sources */,
 				3B9A3A611CB59A6B009CD899 /* main.m in Sources */,
+				3B61BE511ECA755F009005D6 /* PWMainTabBarController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -29,6 +29,8 @@ static NSString *const imageSearchApiUrl =
                               latitude:(CGFloat)latitude
                              longitude:(CGFloat)longitude
                             urlSession:(NSURLSession *)session
+                       completionBlock:(void (^)(NSArray *results))processVenues
+                       failureBlock:(void (^)(NSError *error))processError
 {
     NSString *text = [self formatSearchForUrlWithText:searchString];
     NSString *fourSquareDataUrlString;
@@ -66,22 +68,19 @@ static NSString *const imageSearchApiUrl =
                     NSArray *results = [self parseVenueInformationWithVenues:venuesArray
                                                               searchLatitude:latitude
                                                              searchLongitude:longitude];
-                    [[NSNotificationCenter defaultCenter] postNotificationName:@"venuSearchComplete"
-                                                                        object:nil
-                                                                      userInfo:@{@"results":results,
-                                                                                 @"status":@1}];
+                    processVenues(results);
                 }
             } else {
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"venuSearchComplete"
-                                                                    object:nil
-                                                                  userInfo:@{@"error":@"200 status not returned.",
-                                                                             @"status":@0}];
+                NSError *error = [NSError errorWithDomain:NSURLErrorDomain
+                                                     code:400
+                                                 userInfo:nil];
+                processError(error);
             }
         } else {
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"venuSearchComplete"
-                                                                object:nil
-                                                              userInfo:@{@"error":error,
-                                                                         @"status":@0}];
+            NSError *error = [NSError errorWithDomain:NSURLErrorDomain
+                                                 code:400
+                                             userInfo:nil];
+            processError(error);
         }
     }];
     [dataTask resume];
@@ -251,6 +250,10 @@ static NSString *const imageSearchApiUrl =
         }
     }];
     [dataTask resume];
+}
+
++(void)getTrendingVenues {
+    
 }
 
 @end

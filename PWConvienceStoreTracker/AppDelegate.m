@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#import "PWPrimaryViewController.h"
+#import "PWMainTabBarController.h"
 
 @interface AppDelegate ()
 
@@ -18,10 +18,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    PWPrimaryViewController *primaryViewController = [[PWPrimaryViewController alloc] init];
-    UINavigationController *primaryNavigationController =
-    [[UINavigationController alloc] initWithRootViewController:primaryViewController];
-    self.window.rootViewController = primaryNavigationController;
+    PWMainTabBarController *mainTabBarController = [[PWMainTabBarController alloc] init];
+    self.window.rootViewController = mainTabBarController;
     [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
     [[UINavigationBar appearance] setTitleTextAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
                                                            [UIColor whiteColor], NSForegroundColorAttributeName,
